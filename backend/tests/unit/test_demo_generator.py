@@ -80,8 +80,7 @@ def test_recompute_net_sales_and_transactions_from_csv(generated):
             net += line_net
             dd, mm, yyyy = row["Date"][:10].split("/")
             by_month[f"{yyyy}-{mm}"] += line_net
-            if row["Status"] == "COMPLETED":
-                receipts.add(row["Receipt No"])
+            receipts.add(row["Receipt No"])  # refunds count; voids skipped above
     assert abs(net - Decimal(a["year"]["net_sales"])) <= Decimal("0.01")
     assert len(receipts) == a["year"]["transactions"]
     assert abs(by_month["2025-03"] - Decimal(a["by_month"]["2025-03"]["net_sales"])) <= Decimal(

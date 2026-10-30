@@ -252,3 +252,27 @@ async def test_duplicate_branch_code_conflict(client, org_with_branches):
         "/api/v1/branches", json={"code": "B1", "name": "dup"}, headers=owner.h(org["id"])
     )
     assert r.status_code == 409
+
+
+async def test_viewer_cannot_list_members(client, actor, org_with_branches):
+    owner, org, _ = org_with_branches
+    viewer = actor("viewer")
+    await _invite_and_accept(client, owner, org, viewer, role="viewer")
+    r = await client.get("/api/v1/members", headers=viewer.h(org["id"]))
+    assert r.status_code == 403
+
+
+async def test_full_name_taken_from_signup_metadata(client, actor, new_org):
+    from tests.conftest import make_token
+
+    u = actor()
+    u.token = make_token(u.id, u.email, user_metadata={"full_name": "  Mariam Al Hinai "})
+    org = await new_org(u)
+    me = (await client.get("/api/v1/me", headers=u.h())).json()
+    assert me["full_name"] == "Mariam Al Hinai"
+    members = (await client.get("/api/v1/members", headers=u.h(org["id"]))).json()
+    assert members[0]["full_name"] == "Mariam Al Hinai"
+
+    # A later token without a name must not wipe the stored one.
+    u.token = make_token(u.id, u.email)
+    assert (await client.get("/api/v1/me", headers=u.h())).json()["full_name"] == "Mariam Al Hinai"

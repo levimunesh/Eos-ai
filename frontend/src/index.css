@@ -1,0 +1,100 @@
+@import 'tailwindcss';
+
+/*
+  EOS AI tokens. Mineral paper background, petrol ink for the brand surface, a single
+  green reserved for "active / healthy" status. IBM Plex is chosen partly because
+  IBM Plex Sans Arabic exists for the RTL phase.
+*/
+@theme {
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'IBM Plex Sans Condensed', 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+
+  --color-paper: #f4f6f5;
+  --color-surface: #ffffff;
+  --color-sunken: #eef2f1;
+  --color-ink: #15201f;
+  --color-ink-2: #3a4846;
+  --color-muted: #5f6c6a;
+  --color-line: #dbe2e0;
+  --color-line-strong: #c3cdca;
+  --color-petrol: #123b3f;
+  --color-petrol-700: #0d2e31;
+  --color-petrol-500: #1f5a60;
+  --color-petrol-100: #dce9e8;
+  --color-petrol-50: #edf4f3;
+  --color-signal: #2b7a57;
+  --color-signal-50: #e5f2ec;
+  --color-amber: #8a5d0b;
+  --color-amber-50: #f7efdf;
+  --color-danger: #b3261e;
+  --color-danger-50: #fbeceb;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  --text-2xs: 0.6875rem;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.005em;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-petrol-500);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--color-petrol-100);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Empty KPI slot: a ruled placeholder where a figure will sit. */
+.kpi-slot {
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--color-line) 0 1px,
+    transparent 1px 7px
+  );
+}
+
+@keyframes eos-drawer-in {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+@keyframes eos-drawer-in-rtl {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+@keyframes eos-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes eos-pop-in {
+  from { opacity: 0; transform: translateY(4px) scale(0.99); }
+  to { opacity: 1; transform: none; }
+}
+.anim-drawer[data-state='open'] { animation: eos-drawer-in 180ms ease-out; }
+[dir='rtl'] .anim-drawer[data-state='open'] { animation-name: eos-drawer-in-rtl; }
+.anim-overlay[data-state='open'] { animation: eos-fade-in 150ms ease-out; }
+.anim-dialog[data-state='open'] { animation: eos-pop-in 160ms ease-out; }

@@ -50,12 +50,16 @@ async def _ensure_user(session: AsyncSession, user: AuthUser) -> None:
     await session.execute(
         text(
             """
-            insert into eos.users (id, email) values (:id, :email)
-            on conflict (id) do update set email = excluded.email
-            where eos.users.email is distinct from excluded.email
+            insert into eos.users (id, email, full_name) values (:id, :email, :name)
+            on conflict (id) do update
+               set email = excluded.email,
+                   full_name = coalesce(excluded.full_name, eos.users.full_name)
+             where eos.users.email is distinct from excluded.email
+                or (excluded.full_name is not null
+                    and eos.users.full_name is distinct from excluded.full_name)
             """
         ),
-        {"id": user.id, "email": user.email},
+        {"id": user.id, "email": user.email, "name": user.full_name},
     )
 
 

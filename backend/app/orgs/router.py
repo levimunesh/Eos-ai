@@ -27,6 +27,7 @@ from app.orgs.schemas import (
 
 router = APIRouter()
 owner_only = require_role(Role.owner)
+manager_up = require_role(Role.manager)
 
 
 @router.get("/me", response_model=MeOut, tags=["me"])
@@ -50,7 +51,7 @@ async def update_settings(data: OrgSettingsUpdate, ctx: OrgContext = Depends(own
 
 
 @router.get("/members", response_model=list[MemberOut], tags=["members"])
-async def list_members(ctx: OrgContext = Depends(get_org_context)) -> list[MemberOut]:
+async def list_members(ctx: OrgContext = Depends(manager_up)) -> list[MemberOut]:
     return await service.list_members(ctx)
 
 

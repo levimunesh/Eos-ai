@@ -1,0 +1,298 @@
+/**
+ * Every user-facing string lives here. Arabic (`ar`) will be added as a second object with the
+ * same shape; components only ever call `t('path.to.key')`.
+ */
+export const en = {
+  app: {
+    name: 'EOS AI',
+    tagline: 'Business intelligence for multi-branch operators',
+  },
+  common: {
+    loading: 'Loading…',
+    save: 'Save changes',
+    saving: 'Saving…',
+    saved: 'Changes saved',
+    cancel: 'Cancel',
+    close: 'Close',
+    retry: 'Try again',
+    edit: 'Edit',
+    remove: 'Remove',
+    optional: 'Optional',
+    you: 'You',
+    yes: 'Yes',
+    no: 'No',
+    search: 'Search',
+    noMatches: 'No matches',
+    select: 'Select…',
+    copy: 'Copy link',
+    copied: 'Copied',
+    signOut: 'Sign out',
+    comingLater: 'Coming in a later phase',
+    readOnly: 'Read only',
+  },
+  config: {
+    title: 'EOS AI is not configured',
+    body: 'The app needs its Supabase settings before anyone can sign in. Add these variables to frontend/.env (see .env.example) and restart the dev server:',
+  },
+  errors: {
+    generic: 'Something went wrong. Try again in a moment.',
+    network: 'Could not reach the EOS AI server. Check your connection, or that the API is running.',
+    noOrg: 'No organisation is selected.',
+    forbidden: 'Your role does not allow this action.',
+    loadFailed: 'This page could not be loaded.',
+    notFoundTitle: 'Page not found',
+    notFoundBody: 'This address does not match any page in EOS AI.',
+    goHome: 'Go to overview',
+  },
+  auth: {
+    email: 'Email',
+    password: 'Password',
+    newPassword: 'New password',
+    fullName: 'Full name',
+    signInTitle: 'Sign in to EOS AI',
+    signInAction: 'Sign in',
+    signingIn: 'Signing in…',
+    noAccount: 'New to EOS AI?',
+    createAccountLink: 'Create an account',
+    forgotLink: 'Forgot password?',
+    signUpTitle: 'Create your account',
+    signUpAction: 'Create account',
+    signingUp: 'Creating account…',
+    haveAccount: 'Already have an account?',
+    signInLink: 'Sign in',
+    checkEmailTitle: 'Confirm your email',
+    checkEmailBody: 'We sent a confirmation link to {email}. Open it to finish creating your account, then sign in.',
+    forgotTitle: 'Reset your password',
+    forgotBody: 'Enter the email you sign in with. We will send a link to choose a new password.',
+    forgotAction: 'Send reset link',
+    sending: 'Sending…',
+    forgotSent: 'If an account exists for {email}, a reset link is on its way.',
+    backToSignIn: 'Back to sign in',
+    resetTitle: 'Choose a new password',
+    resetAction: 'Update password',
+    resetDone: 'Password updated. You are signed in.',
+    resetNoSession: 'This reset link is invalid or has expired. Request a new one.',
+    sessionExpired: 'Your session ended. Sign in again to continue.',
+    v: {
+      email: 'Enter a valid email address',
+      password: 'Use at least 8 characters',
+      passwordRequired: 'Enter your password',
+      fullName: 'Enter your name',
+    },
+  },
+  onboarding: {
+    title: 'Set up your organisation',
+    intro: 'These settings decide how EOS AI reads your sales, costs and dates. You can change most of them later.',
+    name: 'Organisation name',
+    namePlaceholder: 'e.g. Al Noor Trading LLC',
+    currency: 'Base currency',
+    currencyPlaceholder: 'Choose a currency',
+    currencyHint: 'All KPIs are reported in this currency. It cannot be changed after the organisation is created.',
+    timezone: 'Timezone',
+    timezoneHint: 'Used to decide which business day a sale belongs to.',
+    taxRate: 'Tax rate (%)',
+    taxRateHint: 'VAT or sales tax, e.g. 5 for 5%. Enter 0 if you do not charge tax.',
+    pricesIncludeTax: 'Prices include tax',
+    pricesIncludeTaxHint: 'Tick this if the prices in your sales exports already include tax.',
+    fiscalMonth: 'Fiscal year starts in',
+    dateFormat: 'Date format in your files',
+    submit: 'Create organisation',
+    submitting: 'Creating…',
+    backToApp: 'Back to EOS AI',
+    v: {
+      name: 'Use at least 2 characters',
+      currency: 'Choose a base currency',
+      timezone: 'Choose a timezone',
+      taxRate: 'Enter a percentage between 0 and 99.99, with up to 2 decimals',
+    },
+  },
+  invite: {
+    title: 'Join an organisation',
+    body: 'You have been invited to EOS AI. Accept to join the organisation as {email}.',
+    accept: 'Accept invitation',
+    accepting: 'Joining…',
+    signedInAs: 'Signed in as {email}',
+    mismatchHint: 'Sign out and sign in with the address the invitation was sent to.',
+    invalid: 'This invitation is invalid, has expired, or has already been used. Ask the owner for a new link.',
+    alreadyMember: 'You are already a member of this organisation.',
+    openApp: 'Open EOS AI',
+  },
+  nav: {
+    overview: 'Overview',
+    imports: 'Data imports',
+    assistant: 'AI assistant',
+    reports: 'Reports',
+    settings: 'Settings',
+    organisation: 'Organisation',
+    members: 'Members',
+    branches: 'Branches',
+    openMenu: 'Open navigation',
+    menu: 'Navigation',
+    switchOrg: 'Switch organisation',
+    newOrg: 'New organisation',
+    demo: 'Demo',
+  },
+  roles: {
+    owner: 'Owner',
+    manager: 'Manager',
+    viewer: 'Viewer',
+  },
+  overview: {
+    title: 'Overview',
+    emptyTitle: 'No business data yet',
+    emptyBody: 'Nothing has been imported into {org}, so there is nothing to report. Importing sales, purchases and stock files arrives in the next release.',
+    kpiCaption: 'Headline figures appear here once data is imported',
+    awaiting: 'Awaiting data',
+    kpis: {
+      netSales: 'Net sales',
+      transactions: 'Transactions',
+      avgTicket: 'Average ticket',
+      grossProfit: 'Gross profit',
+    },
+    setupTitle: 'Get ready for your first import',
+    setupBranches: 'Add your branches',
+    setupBranchesBody: 'Imports match each sale to a branch code, so set these up first.',
+    setupBranchesAction: 'Set up branches',
+    setupMembers: 'Invite your team',
+    setupMembersBody: 'Give managers access to all branches or only the ones they run.',
+    setupMembersAction: 'Manage members',
+    setupImport: 'Import your data',
+    setupImportBody: 'Upload exports from your POS or accounting system.',
+    viewerNote: 'An owner of this organisation sets up branches and imports. You will see figures here once that is done.',
+  },
+  org: {
+    title: 'Organisation',
+    description: 'How EOS AI interprets your figures and dates.',
+    ownerOnly: 'Only owners can change these settings.',
+    currencyFixed: 'Fixed at creation so historical figures are never silently restated.',
+    decimals: '{count} decimal places',
+  },
+  members: {
+    title: 'Members',
+    description: 'People who can sign in to this organisation and what they can see.',
+    viewerNoAccess: 'Only owners and managers can see the member list. Ask an owner if you need changes to your access.',
+    invite: 'Invite member',
+    tableLabel: 'Members',
+    colName: 'Member',
+    colRole: 'Role',
+    colAccess: 'Branch access',
+    colActions: 'Actions',
+    allBranches: 'All branches',
+    someBranches: '{count} branches',
+    oneBranch: '1 branch',
+    noBranches: 'No branches',
+    editTitle: 'Edit access for {name}',
+    editAction: 'Edit access',
+    role: 'Role',
+    branchAccess: 'Branch access',
+    allBranchesOption: 'All branches, including ones added later',
+    chooseBranches: 'Choose branches',
+    noBranchesYet: 'This organisation has no branches yet, so only "All branches" is available.',
+    removeTitle: 'Remove {name}?',
+    removeBody: 'They lose access to this organisation immediately. Their past activity stays in the audit log.',
+    removeAction: 'Remove member',
+    removing: 'Removing…',
+    empty: 'No members to show.',
+    roleHelp: {
+      owner: 'Full control, including settings, members and branches.',
+      manager: 'Works with data for the branches they can see.',
+      viewer: 'Read-only access to the branches they can see.',
+    },
+    v: {
+      branches: 'Pick at least one branch, or give access to all branches',
+    },
+  },
+  invitations: {
+    title: 'Pending invitations',
+    empty: 'No pending invitations.',
+    colEmail: 'Email',
+    colRole: 'Role',
+    colAccess: 'Branch access',
+    colExpires: 'Expires',
+    revoke: 'Revoke',
+    revokeTitle: 'Revoke the invitation for {email}?',
+    revokeBody: 'The link stops working straight away. You can invite them again later.',
+    revoking: 'Revoking…',
+    dialogTitle: 'Invite a member',
+    dialogBody: 'They join with the role and branch access you choose here.',
+    email: 'Email address',
+    send: 'Create invitation',
+    sending: 'Creating…',
+    createdTitle: 'Invitation created',
+    createdBody: 'Send this link to {email}. It is shown only once and expires in 7 days.',
+    emailNotBuilt: 'EOS AI does not send invitation emails yet, so share the link yourself.',
+    linkLabel: 'Invitation link',
+    done: 'Done',
+  },
+  branches: {
+    title: 'Branches',
+    description: 'Locations your sales and stock are reported by.',
+    descriptionScoped: 'The branches you have access to.',
+    add: 'Add branch',
+    tableLabel: 'Branches',
+    colCode: 'Code',
+    colName: 'Name',
+    colCity: 'City',
+    colStatus: 'Status',
+    colActions: 'Actions',
+    active: 'Active',
+    inactive: 'Inactive',
+    activate: 'Activate',
+    deactivate: 'Deactivate',
+    code: 'Branch code',
+    codeHint: 'The code your POS uses for this branch. It cannot be changed later.',
+    name: 'Branch name',
+    city: 'City',
+    createTitle: 'Add a branch',
+    createAction: 'Add branch',
+    creating: 'Adding…',
+    editTitle: 'Edit {name}',
+    emptyTitle: 'No branches yet',
+    emptyOwner: 'Add each location you report on. Imports match sales to branches by code.',
+    emptyViewer: 'There are no branches you can see yet.',
+    v: {
+      code: 'Enter the branch code',
+      codeLength: 'Use 50 characters or fewer',
+      name: 'Enter a branch name',
+      nameLength: 'Use 200 characters or fewer',
+      city: 'Use 100 characters or fewer',
+    },
+  },
+  months: [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ],
+} as const
+
+type Strings = typeof en
+
+type StringPaths<T> = {
+  [K in keyof T & string]: T[K] extends string
+    ? K
+    : T[K] extends readonly string[]
+      ? never
+      : `${K}.${StringPaths<T[K]>}`
+}[keyof T & string]
+
+export type StringKey = StringPaths<Strings>
+
+const active: Strings = en
+
+/** Look up a string by dot path and fill `{placeholders}`. */
+export function t(key: StringKey, vars?: Record<string, string | number>): string {
+  let node: unknown = active
+  for (const part of key.split('.')) {
+    node = (node as Record<string, unknown> | undefined)?.[part]
+  }
+  const raw = typeof node === 'string' ? node : key
+  if (!vars) return raw
+  return raw.replace(/\{(\w+)\}/g, (m, name: string) =>
+    name in vars ? String(vars[name]) : m,
+  )
+}
+
+export function monthName(month: number): string {
+  return active.months[month - 1] ?? String(month)
+}
+
+export const locale = 'en'

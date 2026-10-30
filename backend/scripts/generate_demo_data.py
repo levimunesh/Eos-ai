@@ -21,7 +21,7 @@ KPI rules used for expected answers (brief section 6, with clarifications):
   discounts       sum(discount) over those lines
   returns         sum(|line net|) over refund lines (negative qty), ex tax
   net_sales       gross_sales - discounts - returns
-  transactions    distinct completed sale receipts; voided and refund receipts excluded
+  transactions    distinct receipts excluding voided ones; refund receipts count (owner decision)
   avg_ticket      net_sales / transactions
   cogs            sum(net qty * unit cost effective on the sale date) for SKUs with a cost;
                   coverage = share of net sales whose SKU has a cost
@@ -335,7 +335,7 @@ def run(out: Path, seed: int) -> dict:
             if cost is not None:
                 m["cogs"] += q4(qty * cost)
                 m["costed_net_sales"] += net
-        if r["status"] == "COMPLETED":
+        if r["status"] != "VOID":
             tx[key].add(r["no"])
     counts["sales.csv"] = write_csv(
         out / "sales.csv",

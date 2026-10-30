@@ -23,6 +23,7 @@ ASYMMETRIC_ALGS = ["ES256", "RS256", "EdDSA"]
 class AuthUser:
     id: UUID
     email: str
+    full_name: str | None = None
 
 
 @lru_cache
@@ -79,4 +80,7 @@ async def get_auth_user(authorization: str | None = Header(default=None)) -> Aut
     email = (claims.get("email") or "").strip().lower()
     if not email:
         raise Unauthorized("Token has no email")
-    return AuthUser(id=user_id, email=email)
+    meta = claims.get("user_metadata") or {}
+    raw_name = meta.get("full_name") or meta.get("name") if isinstance(meta, dict) else None
+    full_name = str(raw_name).strip()[:200] if raw_name else None
+    return AuthUser(id=user_id, email=email, full_name=full_name or None)
