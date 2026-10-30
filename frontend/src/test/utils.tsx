@@ -30,14 +30,20 @@ export function jsonResponse(body: unknown, status = 200) {
   })
 }
 
-type Routes = Record<string, unknown>
+/** A value, or a function of the request returning a value or a full Response. */
+type RouteValue = unknown | ((init: RequestInit | undefined, url: URL) => unknown)
+type Routes = Record<string, RouteValue>
 
 /** A fetch mock answering `METHOD /path` keys (path without the base URL). */
 export function routeFetch(routes: Routes) {
   return vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = new URL(String(input))
     const key = `${init?.method ?? 'GET'} ${url.pathname.replace('/api/v1', '')}`
-    if (key in routes) return jsonResponse(routes[key])
+    if (key in routes) {
+      const r = routes[key]
+      const v = typeof r === 'function' ? await (r as (i?: RequestInit, u?: URL) => unknown)(init, url) : r
+      return v instanceof Response ? v : jsonResponse(v)
+    }
     return jsonResponse({ error: { code: 'not_found', message: `No mock for ${key}`, details: null } }, 404)
   })
 }

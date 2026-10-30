@@ -10,9 +10,10 @@ export interface NavItem {
   hideForViewer?: boolean
 }
 
+
 export const PRIMARY_NAV: NavItem[] = [
   { to: '/', label: 'nav.overview', icon: LayoutGrid, end: true },
-  { to: '/imports', label: 'nav.imports', icon: Upload, disabled: true },
+  { to: '/imports', label: 'nav.imports', icon: Upload, hideForViewer: true },
   { to: '/assistant', label: 'nav.assistant', icon: Bot, disabled: true },
   { to: '/reports', label: 'nav.reports', icon: FileBarChart, disabled: true },
 ]
@@ -23,6 +24,10 @@ export const SETTINGS_NAV: NavItem[] = [
   { to: '/settings/branches', label: 'nav.branches', icon: Store },
 ]
 
+export function visiblePrimary(role: string) {
+  return PRIMARY_NAV.filter((item) => !(item.hideForViewer && role === 'viewer'))
+}
+
 export function visibleSettings(role: string) {
   return SETTINGS_NAV.filter((item) => !(item.hideForViewer && role === 'viewer'))
 }
@@ -31,5 +36,7 @@ export function visibleSettings(role: string) {
 export function crumbsFor(pathname: string): StringKey[] {
   const settings = SETTINGS_NAV.find((n) => pathname.startsWith(n.to))
   if (settings) return ['nav.settings', settings.label]
+  if (pathname.startsWith('/imports/new')) return ['nav.imports', 'imports.wizard.title']
+  if (pathname.startsWith('/imports')) return ['nav.imports']
   return ['nav.overview']
 }

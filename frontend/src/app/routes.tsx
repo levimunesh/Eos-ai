@@ -21,6 +21,10 @@ const OrgSettingsPage = lazy(() =>
   import('@/features/orgs/OrgSettingsPage').then((m) => ({ default: m.OrgSettingsPage })),
 )
 const MembersPage = lazy(() => import('@/features/members/MembersPage').then((m) => ({ default: m.MembersPage })))
+const ImportsPage = lazy(() => import('@/features/imports/ImportsPage').then((m) => ({ default: m.ImportsPage })))
+const ImportWizardPage = lazy(() =>
+  import('@/features/imports/ImportWizardPage').then((m) => ({ default: m.ImportWizardPage })),
+)
 const BranchesPage = lazy(() => import('@/features/branches/BranchesPage').then((m) => ({ default: m.BranchesPage })))
 
 const page = (el: React.ReactNode) => <Suspense fallback={<FullPageSpinner />}>{el}</Suspense>
@@ -41,6 +45,8 @@ export function AppRoutes() {
         <Route element={<OrgGate />}>
           <Route element={<AppLayout />}>
             <Route index element={<OverviewPage />} />
+            <Route path="imports" element={inApp(<ImportsPage />)} />
+            <Route path="imports/new" element={inApp(<ImportWizardPage />)} />
             <Route path="settings/organisation" element={inApp(<OrgSettingsPage />)} />
             <Route path="settings/members" element={inApp(<MembersPage />)} />
             <Route path="settings/branches" element={inApp(<BranchesPage />)} />

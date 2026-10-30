@@ -38,6 +38,12 @@ export interface RequestOptions {
   signal?: AbortSignal
 }
 
+export interface UploadOptions {
+  orgId?: string | null
+  onProgress?: (fraction: number) => void
+  signal?: AbortSignal
+}
+
 export interface ApiClientOptions {
   baseUrl: string
   getAccessToken: () => Promise<string | null> | string | null
@@ -115,8 +121,95 @@ export function createApiClient(options: ApiClientOptions) {
     return data as T
   }
 
+  async function authHeaders(orgId?: string | null): Promise<Record<string, string>> {
+    const headers: Record<string, string> = {}
+    const token = await options.getAccessToken()
+    if (token) headers.Authorization = `Bearer ${token}`
+    const org = orgId ?? options.getOrgId?.() ?? null
+    if (!org) throw new ApiError(0, 'no_org', t('errors.noOrg'))
+    headers['X-Org-Id'] = org
+    return headers
+  }
+
+  function errorFrom(status: number, text: string): ApiError {
+    let data: unknown
+    try {
+      data = text ? JSON.parse(text) : null
+    } catch {
+      data = null
+    }
+    const env = parseEnvelope(data)
+    const fallback = status === 403 ? t('errors.forbidden') : t('errors.generic')
+    const error = new ApiError(status, env?.code ?? `http_${status}`, env?.message || fallback, env?.details)
+    if (status === 401) options.onUnauthorized?.(error)
+    return error
+  }
+
+  /** GET a binary/text resource (e.g. a CSV) with auth headers, as a Blob. */
+  async function blob(path: string, orgId?: string | null): Promise<Blob> {
+    const headers = await authHeaders(orgId)
+    const doFetch = options.fetchImpl ?? ((...args: Parameters<typeof fetch>) => fetch(...args))
+    let res: Response
+    try {
+      res = await doFetch(`${base}${path}`, { method: 'GET', headers })
+    } catch {
+      throw new ApiError(0, 'network_error', t('errors.network'))
+    }
+    if (!res.ok) throw errorFrom(res.status, await res.text())
+    return res.blob()
+  }
+
+  /**
+   * POST multipart form data. Uses XMLHttpRequest in the browser so upload progress can be
+   * reported; falls back to fetch (no progress) when a fetch implementation is injected.
+   */
+  async function upload<T>(path: string, form: FormData, opts: UploadOptions = {}): Promise<T> {
+    const headers = await authHeaders(opts.orgId)
+    const url = `${base}${path}`
+    if (options.fetchImpl || typeof XMLHttpRequest === 'undefined') {
+      const doFetch = options.fetchImpl ?? ((...args: Parameters<typeof fetch>) => fetch(...args))
+      let res: Response
+      try {
+        res = await doFetch(url, { method: 'POST', headers, body: form, signal: opts.signal })
+      } catch (e) {
+        if (e instanceof DOMException && e.name === 'AbortError') throw e
+        throw new ApiError(0, 'network_error', t('errors.network'))
+      }
+      const text = await res.text()
+      if (!res.ok) throw errorFrom(res.status, text)
+      opts.onProgress?.(1)
+      return (text ? JSON.parse(text) : undefined) as T
+    }
+    return new Promise<T>((resolve, reject) => {
+      const xhr = new XMLHttpRequest()
+      xhr.open('POST', url)
+      for (const [k, v] of Object.entries(headers)) xhr.setRequestHeader(k, v)
+      xhr.setRequestHeader('Accept', 'application/json')
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) opts.onProgress?.(e.loaded / e.total)
+      }
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          opts.onProgress?.(1)
+          try {
+            resolve(JSON.parse(xhr.responseText) as T)
+          } catch {
+            reject(new ApiError(xhr.status, 'bad_response', t('errors.generic')))
+          }
+        } else reject(errorFrom(xhr.status, xhr.responseText))
+      }
+      xhr.onerror = () => reject(new ApiError(0, 'network_error', t('errors.network')))
+      xhr.onabort = () => reject(new DOMException('Aborted', 'AbortError'))
+      opts.signal?.addEventListener('abort', () => xhr.abort())
+      xhr.send(form)
+    })
+  }
+
   return {
     request,
+    blob,
+    upload,
+    put: <T>(path: string, body?: unknown, opts?: RequestOptions) => request<T>('PUT', path, { ...opts, body }),
     get: <T>(path: string, opts?: RequestOptions) => request<T>('GET', path, opts),
     post: <T>(path: string, body?: unknown, opts?: RequestOptions) =>
       request<T>('POST', path, { ...opts, body }),

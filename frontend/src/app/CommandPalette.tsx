@@ -1,5 +1,5 @@
 import * as DialogPrimitive from '@radix-ui/react-dialog'
-import { Building2, CornerDownLeft, Moon, Plus, Search, Store, Sun, UserPlus, type LucideIcon } from 'lucide-react'
+import { Building2, CornerDownLeft, FileUp, Moon, Plus, Search, Store, Sun, UserPlus, type LucideIcon } from 'lucide-react'
 import { useCallback, useId, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import { useNavigate } from 'react-router'
 import { Avatar } from '@/components/ui/avatar'
@@ -8,7 +8,7 @@ import { t } from '@/lib/strings'
 import { useTheme } from '@/lib/theme-context'
 import { useModHotkey } from '@/lib/use-hotkey'
 import { cn } from '@/lib/utils'
-import { PRIMARY_NAV, visibleSettings } from './nav'
+import { visiblePrimary, visibleSettings } from './nav'
 
 interface Command {
   id: string
@@ -30,7 +30,7 @@ function useCommands(close: () => void): Command[] {
       close()
       navigate(to)
     }
-    const nav: Command[] = [...PRIMARY_NAV.filter((n) => !n.disabled), ...visibleSettings(role)].map((n) => ({
+    const nav: Command[] = [...visiblePrimary(role).filter((n) => !n.disabled), ...visibleSettings(role)].map((n) => ({
       id: `nav:${n.to}`,
       group: t('palette.groupNavigate'),
       label: t(n.label),
@@ -39,6 +39,9 @@ function useCommands(close: () => void): Command[] {
       run: go(n.to),
     }))
     const actions: Command[] = []
+    if (role !== 'viewer') {
+      actions.push({ id: 'act:import', group: t('palette.groupActions'), label: t('palette.newImport'), icon: FileUp, keywords: 'upload csv excel data import', run: go('/imports/new') })
+    }
     if (isOwner) {
       actions.push(
         { id: 'act:invite', group: t('palette.groupActions'), label: t('palette.inviteMember'), icon: UserPlus, keywords: 'member team', run: go('/settings/members?invite=1') },

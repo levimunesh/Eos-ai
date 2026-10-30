@@ -276,3 +276,17 @@ async def test_full_name_taken_from_signup_metadata(client, actor, new_org):
     # A later token without a name must not wipe the stored one.
     u.token = make_token(u.id, u.email)
     assert (await client.get("/api/v1/me", headers=u.h())).json()["full_name"] == "Mariam Al Hinai"
+
+
+@pytest.mark.parametrize("method", ["GET", "POST", "PUT", "PATCH", "DELETE"])
+async def test_cors_allows_every_method_the_frontend_uses(client, method):
+    r = await client.options(
+        "/api/v1/imports/00000000-0000-0000-0000-000000000000/mapping",
+        headers={
+            "Origin": "http://localhost:5173",
+            "Access-Control-Request-Method": method,
+            "Access-Control-Request-Headers": "authorization,content-type,x-org-id",
+        },
+    )
+    assert r.status_code == 200, (method, r.text)
+    assert method in r.headers["access-control-allow-methods"]

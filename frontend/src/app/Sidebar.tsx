@@ -4,7 +4,7 @@ import { OrgSwitcher } from '@/features/orgs/OrgSwitcher'
 import { useOrg } from '@/features/orgs/org-context'
 import { t } from '@/lib/strings'
 import { cn } from '@/lib/utils'
-import { PRIMARY_NAV, visibleSettings, type NavItem } from './nav'
+import { visiblePrimary, visibleSettings, type NavItem } from './nav'
 import { Wordmark } from './Wordmark'
 
 function Item({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
@@ -88,7 +88,7 @@ export function Sidebar({
       </div>
       <div className={cn('flex-1 overflow-y-auto px-3 pb-3', collapsed && 'px-2')}>
         <ul className="flex flex-col gap-0.5">
-          {PRIMARY_NAV.map((item) => (
+          {visiblePrimary(role).map((item) => (
             <Item key={item.to} item={item} collapsed={collapsed} />
           ))}
         </ul>

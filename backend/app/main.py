@@ -11,6 +11,7 @@ from app.core.config import get_settings
 from app.core.db import dispose_engine, get_sessionmaker
 from app.core.errors import install_error_handlers
 from app.ingest.router import router as ingest_router
+from app.kpi.router import router as kpi_router
 from app.orgs.router import router as orgs_router
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
@@ -29,7 +30,7 @@ def create_app() -> FastAPI:
         CORSMiddleware,
         allow_origins=settings.cors_origins,
         allow_credentials=False,
-        allow_methods=["GET", "POST", "PATCH", "DELETE"],
+        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
         allow_headers=["Authorization", "Content-Type", "X-Org-Id"],
     )
     install_error_handlers(app)
@@ -49,6 +50,7 @@ def create_app() -> FastAPI:
     api.include_router(orgs_router)
     api.include_router(catalog_router)
     api.include_router(ingest_router)
+    api.include_router(kpi_router)
     app.include_router(api)
     return app
 

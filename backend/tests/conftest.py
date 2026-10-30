@@ -106,7 +106,7 @@ class Actor:
         return headers
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def actor():
     def _make(prefix: str = "user") -> Actor:
         return Actor(f"{prefix}-{uuid.uuid4().hex[:8]}@example.com")
@@ -117,7 +117,7 @@ def actor():
 ORG_BODY = {"name": "Test Co", "base_currency": "OMR", "timezone": "Asia/Muscat"}
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def new_org(client):
     async def _create(owner: Actor, **overrides) -> dict:
         r = await client.post("/api/v1/orgs", json={**ORG_BODY, **overrides}, headers=owner.h())

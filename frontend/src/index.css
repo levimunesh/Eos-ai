@@ -243,3 +243,9 @@
     scroll-behavior: auto !important;
   }
 }
+
+@keyframes eos-indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+[dir='rtl'] .motion-safe\:animate-\[eos-indeterminate_1\.4s_ease-in-out_infinite\] { animation-direction: reverse; }

@@ -44,3 +44,7 @@ ignore = ["S101", "B008"]
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S105", "S106", "S603", "S608", "ASYNC221"]
 "scripts/**" = ["S311"]
+# SQL is assembled only from constant fragments chosen via internal whitelists
+# (DIMENSIONS, order keys); every user-supplied value is a bound parameter.
+"app/kpi/engine.py" = ["S608"]
+"app/kpi/router.py" = ["S608"]

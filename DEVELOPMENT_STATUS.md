@@ -4,7 +4,8 @@ Last updated: 2026-10-30
 
 ## Current phase
 Phase 1 — Foundation: **complete** (owner approved 2026-10-30).
-Phase 2 — Import: **backend complete**; import screens in the frontend are next.
+Phase 2 — Import: **complete** (backend + screens).
+Phase 3 — KPIs + dashboard: **KPI engine and API complete**; dashboard screens next.
 
 ## Done
 - Phase 0 plan approved with changes: industry-agnostic, multicurrency, Supabase `eos` schema inside mdf-hrms, Arabic later (`docs/PHASE_0_PLAN.md`)
@@ -30,12 +31,23 @@ Phase 2 — Import: **backend complete**; import screens in the frontend are nex
 - Same-file re-uploads are flagged; branch-scoped managers can only import their own branches; branches import is owner-only
 - Background jobs via the imports table (ADR 0003 revised), single transaction per job, retry on crash
 
+## Phase 2 screens done
+- Data imports history, 3-step wizard (choose file, match columns with preview and file settings, review with problem breakdown, error CSV download, skip/replace), reload-safe, phone layouts
+
+## Phase 3 (backend) done
+- KPI engine: gross sales, discounts, returns, net sales, transactions, average ticket, COGS, gross profit, gross margin, operating expenses, inventory value; each with value, previous period, change %, status (complete/partial/no data), coverage, row count, sources and last import time
+- Exchange rates and unit costs applied as of each record's date; missing rates or costs mark figures partial with a plain note instead of guessing
+- Breakdowns by day, month, branch, category, product; drill-down to receipts and their lines with the source file and row number
+- Branch access enforced on every figure; a branch-scoped user asking for another branch gets 403
+- Speed on the demo year (115k lines): 0.4 s for all sales KPIs, 0.09 s for a month
+- Verified: every KPI matches the independently computed answers for the year, all 12 months, all 3 branches and all 36 branch-months; inventory value per branch at every month end; plus a hand-calculated dataset covering refunds, voids, discounts, USD and AED conversion, a currency with no rate, and missing costs
+
 ## In progress
-- Frontend import screens (upload, mapping, report, history)
+- Dashboard screens (KPI cards, trend and breakdown charts, filters, drill-down)
 
 ## Next
-- Import screens in the frontend
-- Phase 3 — KPI engine and dashboard
+- Dashboard screens
+- Phase 4 — AI assistant
 
 ## Decisions and clarifications made during Phase 1
 - Base currency cannot be changed after creation (it would silently restate every figure).
@@ -44,6 +56,9 @@ Phase 2 — Import: **backend complete**; import screens in the frontend are nex
 - Member names come from the `full_name` given at sign-up and are kept if a later token omits it.
 - Identical sales lines on one receipt are kept as repeat purchases (a customer can buy the same item twice). They are only treated as duplicates when the file has a line-number column. The report warns when it sees them.
 - Rejected lines don't block the rest of their receipt; the report says so and the error file lists them for re-import.
+- COGS coverage is the share of net sales (by value) whose items have a cost. Lines without an exchange rate are reported separately as a note and make the figure partial.
+- Inventory value uses each branch's latest stock count on or before the period end; count unit costs are taken as base currency.
+- A branch-filtered view leaves out head-office expenses (they belong to no branch).
 - Import "append" mode from the brief is not offered: records with a natural key (receipt, invoice, SKU) can only be skipped or replaced, otherwise totals would double.
 - Uploaded files are stored in the database (`eos.import_files`, 25 MB limit) for now; move to object storage before large customers.
 - COGS uses net quantity (sales minus returns) at the unit cost effective on the sale date.
@@ -66,9 +81,9 @@ Phase 2 — Import: **backend complete**; import screens in the frontend are nex
 Round-trip checked locally: upgrade → downgrade to base → upgrade.
 
 ## Tests
-- Backend: 112 passing, including full demo-company import whose loaded sales match the independently computed answers (418,364.517 OMR net, 48,475 transactions), messy-file accounting (51 rows = 1 imported + 8 rejected + 42 duplicate), replace mode, re-upload detection, branch-scoped imports and Excel/Arabic parsing. Previously: 66 passing (tenancy isolation via API and raw SQL as `eos_app`, RLS guardrail for every tenant table, auth edge cases, roles, invitations, names, demo generator determinism and independent recomputation)
+- Backend: 129 passing (adds KPI acceptance and browser-access tests). Was 112 passing, including full demo-company import whose loaded sales match the independently computed answers (418,364.517 OMR net, 48,475 transactions), messy-file accounting (51 rows = 1 imported + 8 rejected + 42 duplicate), replace mode, re-upload detection, branch-scoped imports and Excel/Arabic parsing. Previously: 66 passing (tenancy isolation via API and raw SQL as `eos_app`, RLS guardrail for every tenant table, auth edge cases, roles, invitations, names, demo generator determinism and independent recomputation)
 - Isolation tests verified to fail when RLS is removed from a table
-- Frontend: 31 passing (API client headers and error envelope, onboarding validation and percent conversion, empty overview shows no figures, role gating for viewer/manager/owner); lint and production build clean
+- Frontend: 47 passing (adds import wizard flow, polling, failure, resume, error download, viewer access). Was 31 passing (API client headers and error envelope, onboarding validation and percent conversion, empty overview shows no figures, role gating for viewer/manager/owner); lint and production build clean
 - Not yet tested: real sign-in against Supabase Auth end to end (the build environment can't reach Supabase); first run should be done by the owner
 
 ## Integrations

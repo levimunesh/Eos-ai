@@ -4,6 +4,7 @@ import { PageHeader } from '@/components/states'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import { useOrg } from '@/features/orgs/org-context'
+import { useImportsQuery } from '@/features/imports/api'
 import { useBranchesQuery } from '@/lib/queries'
 import { t, type StringKey } from '@/lib/strings'
 import { cn } from '@/lib/utils'
@@ -61,7 +62,9 @@ interface Step {
 
 function SetupChecklist() {
   const branches = useBranchesQuery()
+  const imports = useImportsQuery()
   const hasBranches = (branches.data?.length ?? 0) > 0
+  const hasImported = (imports.data ?? []).some((i) => i.status === 'done')
   const steps: Step[] = [
     {
       title: t('overview.setupBranches'),
@@ -79,7 +82,14 @@ function SetupChecklist() {
       action: t('overview.setupMembersAction'),
       done: false,
     },
-    { title: t('overview.setupImport'), body: t('overview.setupImportBody'), icon: Upload, done: false, later: true },
+    {
+      title: t('overview.setupImport'),
+      body: t('overview.setupImportBody'),
+      icon: Upload,
+      to: '/imports/new',
+      action: t('overview.setupImportAction'),
+      done: hasImported,
+    },
   ]
   const done = steps.filter((s) => s.done).length
   const firstOpen = steps.findIndex((s) => !s.done && !s.later)
