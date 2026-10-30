@@ -50,9 +50,9 @@ Round-trip checked locally: upgrade → downgrade to base → upgrade.
 ## Integrations
 - Supabase database: live, `eos` schema in mdf-hrms; not exposed via the Data API (anon/authenticated have no schema access)
 - Supabase Auth: shared with other apps in mdf-hrms; only users with an EOS membership can access EOS data
-- `eos_app` password: **not set yet in Supabase** — owner must run `ALTER ROLE eos_app WITH PASSWORD '...'` in the SQL editor
+- `eos_app` password: set by the owner in Supabase (2026-10-30); store it only in the backend host's secrets, never in the repo
 - Claude API: not used until Phase 4
-- GitHub: private repo `eos-ai` not yet reachable from the build session; code committed locally
+- GitHub: private repo `levimunesh/Eos-ai`, pushed to `main`
 
 ## Deployment
 - Not deployed. Backend hosting decision (Railway or similar) comes with Phase 3 when there is something to look at.
