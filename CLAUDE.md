@@ -2,17 +2,23 @@
 
 Read `docs/PHASE_0_PLAN.md` and `DEVELOPMENT_STATUS.md` before changing anything.
 
-## Commands (available from Phase 1)
+## Commands
 - Start Postgres: `docker compose up -d db`
 - Backend deps: `cd backend && uv sync`
-- Migrate: `cd backend && uv run alembic upgrade head`
-- Run API: `cd backend && uv run uvicorn app.main:app --reload`
-- Run worker: `cd backend && uv run python worker.py`
-- Seed demo org: `cd backend && uv run python scripts/generate_demo_data.py --load`
-- Backend tests: `cd backend && uv run pytest`
+- Migrate (owner role): `cd backend && uv run alembic upgrade head`, then once per database:
+  `ALTER ROLE eos_app WITH PASSWORD '...'`
+- Migration SQL for Supabase: `cd backend && uv run alembic upgrade <from>:<to> --sql`
+- Run API: `cd backend && cp .env.example .env && uv run uvicorn app.main:app --reload`
+- Generate demo data: `cd backend && uv run python scripts/generate_demo_data.py --out ../demo_data`
+- Backend tests (needs Postgres; set `TEST_PG_ADMIN_URL` if not `postgres@localhost:5432`):
+  `cd backend && uv run pytest`
+- Lint: `cd backend && uv run ruff check . && uv run ruff format --check .`
 - Frontend: `cd frontend && npm install && npm run dev`
-- Frontend tests: `cd frontend && npm test`
-- Eval (Phase 4): `cd backend && uv run python ../eval/run_eval.py`
+- Frontend checks: `cd frontend && npm run lint && npm test -- --run && npm run build`
+
+## Where things live
+- Supabase project `mdf-hrms` (ref `tjqmemvtwcaqakyqgdrh`), schema `eos`. Never touch `public` or other schemas there.
+- New tenant tables need: `org_id`, RLS enabled, a `tenant_all` policy for `eos_app`, grants, and a test in `tests/integration/test_tenancy.py`.
 
 ## Decisions that must not drift
 - Tenancy: repository `org_id` filter + RLS via `SET LOCAL app.org_id`; app DB role never owns tables (ADR 0002).

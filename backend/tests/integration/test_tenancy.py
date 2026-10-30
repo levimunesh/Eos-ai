@@ -140,5 +140,31 @@ async def test_app_role_cannot_bypass_rls(app_conn):
     assert row["rolbypassrls"] is False and row["rolsuper"] is False
 
 
+async def test_every_tenant_table_has_rls_and_a_policy(database):
+    """Guardrail for future migrations: a table with org_id must be protected."""
+    from tests.conftest import OWNER_URL
+
+    conn = await asyncpg.connect(OWNER_URL)
+    try:
+        rows = await conn.fetch(
+            """
+            select c.relname, c.relrowsecurity,
+                   (select count(*) from pg_policies p
+                     where p.schemaname = 'eos' and p.tablename = c.relname) as policies
+              from pg_class c
+              join pg_namespace n on n.oid = c.relnamespace
+             where n.nspname = 'eos' and c.relkind = 'r'
+               and exists (select 1 from information_schema.columns col
+                            where col.table_schema = 'eos' and col.table_name = c.relname
+                              and col.column_name = 'org_id')
+            """
+        )
+    finally:
+        await conn.close()
+    assert rows, "expected tenant tables"
+    unprotected = [r["relname"] for r in rows if not r["relrowsecurity"] or r["policies"] == 0]
+    assert unprotected == []
+
+
 def test_actor_ids_are_unique():
     assert Actor("a@x.com").id != Actor("a@x.com").id
