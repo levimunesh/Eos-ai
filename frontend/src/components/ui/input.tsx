@@ -2,7 +2,7 @@ import { forwardRef, type InputHTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 
 export const inputClass =
-  'h-9 w-full rounded-md border border-line-strong bg-surface px-3 text-sm text-ink placeholder:text-muted/80 transition-colors focus-visible:border-petrol-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-petrol-100 disabled:cursor-not-allowed disabled:bg-sunken disabled:text-muted aria-[invalid=true]:border-danger aria-[invalid=true]:ring-danger-50'
+  'focus-field h-11 w-full rounded-md border border-line-strong bg-surface px-3 text-[0.9375rem] text-fg shadow-xs placeholder:text-muted transition-[border-color,box-shadow] duration-150 hover:border-muted/50 disabled:cursor-not-allowed disabled:bg-subtle disabled:text-muted disabled:shadow-none aria-[invalid=true]:border-danger sm:h-9 sm:text-sm'
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
   ({ className, type = 'text', ...props }, ref) => (

@@ -33,13 +33,13 @@ export function ResetPasswordPage() {
     <AuthLayout
       title={t('auth.resetTitle')}
       footer={
-        <Link to={session ? '/' : '/forgot-password'} className="font-medium text-petrol-500 hover:underline">
+        <Link to={session ? '/' : '/forgot-password'} className="font-medium text-accent-text hover:underline">
           {session ? t('errors.goHome') : t('auth.forgotAction')}
         </Link>
       }
     >
       {!session ? (
-        <p role="alert" className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber">
+        <p role="alert" className="rounded-md bg-warning-soft px-3 py-2 text-sm text-warning">
           {t('auth.resetNoSession')}
         </p>
       ) : (
@@ -55,11 +55,11 @@ export function ResetPasswordPage() {
             />
           </Field>
           {error && (
-            <p role="alert" className="rounded-md bg-danger-50 px-3 py-2 text-sm text-danger">
+            <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-sm text-danger-text">
               {error}
             </p>
           )}
-          <Button type="submit" size="lg" disabled={isSubmitting}>
+          <Button type="submit" size="lg" className="mt-1" disabled={isSubmitting}>
             {isSubmitting ? t('common.saving') : t('auth.resetAction')}
           </Button>
         </form>

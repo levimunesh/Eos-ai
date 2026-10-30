@@ -1,6 +1,9 @@
-import { Pencil, Trash2, UserPlus } from 'lucide-react'
+import { MailPlus, Pencil, Trash2, UserPlus, Users } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { ErrorBlock, LoadingBlock, PageHeader } from '@/components/states'
+import { useSearchParams } from 'react-router'
+import { RowActionsMenu } from '@/components/RowActions'
+import { EmptyState, ErrorBlock, LoadingBlock, PageHeader } from '@/components/states'
+import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
@@ -16,12 +19,13 @@ import {
   useRevokeInvitation,
 } from '@/lib/queries'
 import { t } from '@/lib/strings'
+import { useToast } from '@/lib/toast'
 import type { Invitation, Member, Role } from '@/lib/types'
 import { accessSummary } from './access'
 import { ConfirmDialog, EditAccessDialog, InviteDialog } from './MemberDialogs'
 
-const ROLE_TONE: Record<Role, 'petrol' | 'neutral' | 'outline'> = {
-  owner: 'petrol',
+const ROLE_TONE: Record<Role, 'accent' | 'neutral' | 'outline'> = {
+  owner: 'accent',
   manager: 'neutral',
   viewer: 'outline',
 }
@@ -56,11 +60,21 @@ function MembersContent() {
   const remove = useRemoveMember()
   const revoke = useRevokeInvitation()
 
-  const [inviting, setInviting] = useState(false)
   const [editing, setEditing] = useState<Member | null>(null)
   const [removing, setRemoving] = useState<Member | null>(null)
   const [revoking, setRevoking] = useState<Invitation | null>(null)
   const [now] = useState(() => Date.now())
+  const toast = useToast()
+  const [params, setParams] = useSearchParams()
+
+  // Open state lives in the URL (?invite=1) so the command palette can open this dialog.
+  const inviting = isOwner && params.get('invite') === '1'
+  const setInviting = (open: boolean) => {
+    const next = new URLSearchParams(params)
+    if (open) next.set('invite', '1')
+    else next.delete('invite')
+    setParams(next, { replace: true })
+  }
 
   const branchNames = useMemo(
     () => new Map((branches.data ?? []).map((b) => [b.id, b.code] as const)),
@@ -96,13 +110,13 @@ function MembersContent() {
         ) : members.isError ? (
           <ErrorBlock error={members.error} onRetry={() => void members.refetch()} />
         ) : members.data.length === 0 ? (
-          <p className="px-5 py-8 text-sm text-muted">{t('members.empty')}</p>
+          <EmptyState icon={Users} title={t('members.empty')} />
         ) : (
           <Table aria-label={t('members.tableLabel')}>
             <TableHeader>
               <TableRow>
                 <TableHead>{t('members.colName')}</TableHead>
-                <TableHead>{t('members.colRole')}</TableHead>
+                <TableHead className="hidden sm:table-cell">{t('members.colRole')}</TableHead>
                 <TableHead className="hidden md:table-cell">{t('members.colAccess')}</TableHead>
                 {isOwner && <TableHead className="text-end">{t('members.colActions')}</TableHead>}
               </TableRow>
@@ -113,25 +127,48 @@ function MembersContent() {
                 const isMe = m.user_id === me.id
                 return (
                   <TableRow key={m.membership_id}>
-                    <TableCell className="max-w-[16rem]">
-                      <div className="flex items-center gap-2">
-                        <span className="truncate font-medium">{m.full_name || m.email}</span>
-                        {isMe && <Badge tone="outline">{t('common.you')}</Badge>}
+                    <TableCell className="max-w-[18rem]">
+                      <div className="flex items-center gap-3">
+                        <Avatar name={m.full_name || m.email} seed={m.user_id} />
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="truncate font-medium">{m.full_name || m.email}</span>
+                            {isMe && <Badge tone="outline">{t('common.you')}</Badge>}
+                          </div>
+                          {m.full_name && <span className="block truncate text-xs text-muted">{m.email}</span>}
+                          <span className="flex items-center gap-2 pt-1 text-xs text-muted md:hidden" title={access.title}>
+                            <span className="sm:hidden">
+                              <RoleBadge role={m.role} />
+                            </span>
+                            <span className="truncate">{access.label}</span>
+                          </span>
+                        </div>
                       </div>
-                      {m.full_name && <span className="block truncate text-xs text-muted">{m.email}</span>}
-                      <span className="block truncate text-xs text-muted md:hidden" title={access.title}>
-                        {access.label}
-                      </span>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden sm:table-cell">
                       <RoleBadge role={m.role} />
                     </TableCell>
-                    <TableCell className="hidden text-ink-2 md:table-cell" title={access.title}>
+                    <TableCell className="hidden text-fg-2 md:table-cell" title={access.title}>
                       {access.label}
                     </TableCell>
                     {isOwner && (
                       <TableCell className="text-end whitespace-nowrap">
-                        <div className="inline-flex items-center gap-1">
+                        <RowActionsMenu
+                          label={`${t('common.moreActions')}: ${m.full_name || m.email}`}
+                          actions={[
+                            { label: t('members.editAction'), icon: Pencil, onSelect: () => setEditing(m) },
+                            {
+                              label: t('common.remove'),
+                              icon: Trash2,
+                              danger: true,
+                              onSelect: () => {
+                                remove.reset()
+                                setRemoving(m)
+                              },
+                            },
+                          ]}
+                        />
+                        <div className="hidden items-center gap-1 sm:inline-flex">
                           <Button
                             variant="ghost"
                             size="sm"
@@ -139,7 +176,7 @@ function MembersContent() {
                             aria-label={`${t('members.editAction')}: ${m.full_name || m.email}`}
                           >
                             <Pencil aria-hidden />
-                            <span className="hidden sm:inline">{t('members.editAction')}</span>
+                            <span>{t('members.editAction')}</span>
                           </Button>
                           <Button
                             variant="danger-ghost"
@@ -173,13 +210,23 @@ function MembersContent() {
           ) : invitations.isError ? (
             <ErrorBlock error={invitations.error} onRetry={() => void invitations.refetch()} />
           ) : pendingInvites.length === 0 ? (
-            <p className="px-5 py-6 text-sm text-muted">{t('invitations.empty')}</p>
+            <EmptyState
+              icon={MailPlus}
+              title={t('invitations.empty')}
+              body={t('invitations.emptyHint')}
+              action={
+                <Button variant="secondary" size="sm" onClick={() => setInviting(true)}>
+                  <UserPlus aria-hidden />
+                  {t('members.invite')}
+                </Button>
+              }
+            />
           ) : (
             <Table aria-label={t('invitations.title')}>
               <TableHeader>
                 <TableRow>
                   <TableHead>{t('invitations.colEmail')}</TableHead>
-                  <TableHead>{t('invitations.colRole')}</TableHead>
+                  <TableHead className="hidden sm:table-cell">{t('invitations.colRole')}</TableHead>
                   <TableHead className="hidden md:table-cell">{t('invitations.colAccess')}</TableHead>
                   <TableHead className="hidden sm:table-cell">{t('invitations.colExpires')}</TableHead>
                   <TableHead className="text-end">{t('members.colActions')}</TableHead>
@@ -190,14 +237,24 @@ function MembersContent() {
                   const access = accessSummary(inv.all_branches, inv.branch_ids, branchNames)
                   return (
                     <TableRow key={inv.id}>
-                      <TableCell className="max-w-[16rem] truncate">{inv.email}</TableCell>
-                      <TableCell>
+                      <TableCell className="max-w-[18rem]">
+                        <div className="flex items-center gap-3">
+                          <Avatar name={inv.email} seed={inv.id} className="opacity-70" />
+                          <div className="min-w-0">
+                            <span className="block truncate">{inv.email}</span>
+                            <span className="block pt-1 sm:hidden">
+                              <RoleBadge role={inv.role} />
+                            </span>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell">
                         <RoleBadge role={inv.role} />
                       </TableCell>
-                      <TableCell className="hidden text-ink-2 md:table-cell" title={access.title}>
+                      <TableCell className="hidden text-fg-2 md:table-cell" title={access.title}>
                         {access.label}
                       </TableCell>
-                      <TableCell className="hidden text-ink-2 tabular-nums sm:table-cell">
+                      <TableCell className="hidden text-fg-2 tabular-nums sm:table-cell">
                         {formatDate(inv.expires_at, dateFmt, tz)}
                       </TableCell>
                       <TableCell className="text-end">
@@ -234,7 +291,15 @@ function MembersContent() {
             pending={remove.isPending}
             error={remove.error}
             onClose={() => setRemoving(null)}
-            onConfirm={() => removing && remove.mutate(removing.membership_id, { onSuccess: () => setRemoving(null) })}
+            onConfirm={() =>
+              removing &&
+              remove.mutate(removing.membership_id, {
+                onSuccess: () => {
+                  toast.success(t('members.removed', { name: removing.full_name || removing.email }))
+                  setRemoving(null)
+                },
+              })
+            }
           />
           <ConfirmDialog
             open={!!revoking}
@@ -245,7 +310,15 @@ function MembersContent() {
             pending={revoke.isPending}
             error={revoke.error}
             onClose={() => setRevoking(null)}
-            onConfirm={() => revoking && revoke.mutate(revoking.id, { onSuccess: () => setRevoking(null) })}
+            onConfirm={() =>
+              revoking &&
+              revoke.mutate(revoking.id, {
+                onSuccess: () => {
+                  toast.success(t('invitations.revoked', { email: revoking.email }))
+                  setRevoking(null)
+                },
+              })
+            }
           />
         </>
       )}

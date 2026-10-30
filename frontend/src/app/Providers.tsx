@@ -7,6 +7,8 @@ import { useAuth } from '@/auth/auth-context'
 import { createApiClient, isApiError } from '@/lib/api'
 import { ApiContext } from '@/lib/api-context'
 import { orgStore } from '@/lib/org-store'
+import { ThemeProvider } from '@/lib/theme-context'
+import { ToastProvider } from '@/lib/toast'
 
 function makeQueryClient() {
   return new QueryClient({
@@ -67,12 +69,16 @@ export function Providers({
 }) {
   const [queryClient] = useState(makeQueryClient)
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider supabase={supabase}>
-          <ApiBridge apiUrl={apiUrl}>{children}</ApiBridge>
-        </AuthProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <ToastProvider>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <AuthProvider supabase={supabase}>
+              <ApiBridge apiUrl={apiUrl}>{children}</ApiBridge>
+            </AuthProvider>
+          </BrowserRouter>
+        </QueryClientProvider>
+      </ToastProvider>
+    </ThemeProvider>
   )
 }

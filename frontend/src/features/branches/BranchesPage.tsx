@@ -1,6 +1,8 @@
-import { Pencil, Plus } from 'lucide-react'
+import { Pencil, Plus, Power, Store } from 'lucide-react'
 import { useState } from 'react'
-import { ErrorBlock, InlineError, LoadingBlock, PageHeader, Spinner } from '@/components/states'
+import { useSearchParams } from 'react-router'
+import { RowActionsMenu } from '@/components/RowActions'
+import { EmptyState, ErrorBlock, InlineError, LoadingBlock, PageHeader, Spinner } from '@/components/states'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -8,13 +10,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useOrg } from '@/features/orgs/org-context'
 import { useBranchesQuery, useUpdateBranch } from '@/lib/queries'
 import { t } from '@/lib/strings'
+import { useToast } from '@/lib/toast'
 import type { Branch } from '@/lib/types'
 import { CreateBranchDialog, EditBranchDialog } from './BranchDialogs'
 
 function StatusBadge({ active }: { active: boolean }) {
   return (
-    <Badge tone={active ? 'signal' : 'neutral'}>
-      <span aria-hidden className={active ? 'size-1.5 rounded-full bg-signal' : 'size-1.5 rounded-full bg-muted'} />
+    <Badge tone={active ? 'success' : 'neutral'} dot>
       {active ? t('branches.active') : t('branches.inactive')}
     </Badge>
   )
@@ -24,8 +26,18 @@ export function BranchesPage() {
   const { isOwner } = useOrg()
   const branches = useBranchesQuery()
   const toggle = useUpdateBranch()
-  const [creating, setCreating] = useState(false)
   const [editing, setEditing] = useState<Branch | null>(null)
+  const toast = useToast()
+  const [params, setParams] = useSearchParams()
+
+  // Open state lives in the URL (?new=1) so the command palette can open this dialog.
+  const creating = isOwner && params.get('new') === '1'
+  const setCreating = (open: boolean) => {
+    const next = new URLSearchParams(params)
+    if (open) next.set('new', '1')
+    else next.delete('new')
+    setParams(next, { replace: true })
+  }
 
   const addButton = isOwner ? (
     <Button onClick={() => setCreating(true)}>
@@ -50,18 +62,17 @@ export function BranchesPage() {
         ) : branches.isError ? (
           <ErrorBlock error={branches.error} onRetry={() => void branches.refetch()} />
         ) : branches.data.length === 0 ? (
-          <div className="flex flex-col items-start gap-3 px-5 py-10">
-            <h2 className="text-base font-semibold">{t('branches.emptyTitle')}</h2>
-            <p className="max-w-[60ch] text-sm text-muted">
-              {isOwner ? t('branches.emptyOwner') : t('branches.emptyViewer')}
-            </p>
-            {addButton}
-          </div>
+          <EmptyState
+            icon={Store}
+            title={t('branches.emptyTitle')}
+            body={isOwner ? t('branches.emptyOwner') : t('branches.emptyViewer')}
+            action={addButton}
+          />
         ) : (
           <Table aria-label={t('branches.tableLabel')}>
             <TableHeader>
               <TableRow>
-                <TableHead>{t('branches.colCode')}</TableHead>
+                <TableHead className="hidden sm:table-cell">{t('branches.colCode')}</TableHead>
                 <TableHead>{t('branches.colName')}</TableHead>
                 <TableHead className="hidden sm:table-cell">{t('branches.colCity')}</TableHead>
                 <TableHead>{t('branches.colStatus')}</TableHead>
@@ -71,26 +82,50 @@ export function BranchesPage() {
             <TableBody>
               {branches.data.map((b) => {
                 const pending = toggle.isPending && toggle.variables?.id === b.id
+                const flip = () =>
+                  toggle.mutate(
+                    { id: b.id, body: { is_active: !b.is_active } },
+                    {
+                      onSuccess: (updated) =>
+                        toast.success(
+                          t(updated.is_active ? 'branches.activated' : 'branches.deactivated', { code: updated.code }),
+                        ),
+                    },
+                  )
                 return (
                   <TableRow key={b.id} className={b.is_active ? undefined : 'text-muted'}>
-                    <TableCell className="font-medium whitespace-nowrap">{b.code}</TableCell>
-                    <TableCell>
-                      <span className={b.is_active ? undefined : 'text-muted'}>{b.name}</span>
-                      {b.city && <span className="block text-xs text-muted sm:hidden">{b.city}</span>}
+                    <TableCell className="hidden whitespace-nowrap sm:table-cell">
+                      <span className="rounded-md bg-subtle px-1.5 py-0.5 text-[0.8125rem] font-medium tabular-nums ring-1 ring-line ring-inset">
+                        {b.code}
+                      </span>
                     </TableCell>
-                    <TableCell className="hidden text-ink-2 sm:table-cell">{b.city ?? ''}</TableCell>
+                    <TableCell>
+                      <span className={b.is_active ? 'font-medium sm:font-normal' : 'text-muted'}>{b.name}</span>
+                      <span className="block text-xs text-muted tabular-nums sm:hidden">
+                        {b.code}
+                        {b.city && `, ${b.city}`}
+                      </span>
+                    </TableCell>
+                    <TableCell className="hidden text-fg-2 sm:table-cell">{b.city ?? ''}</TableCell>
                     <TableCell>
                       <StatusBadge active={b.is_active} />
                     </TableCell>
                     {isOwner && (
                       <TableCell className="text-end whitespace-nowrap">
-                        <div className="inline-flex items-center gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            disabled={pending}
-                            onClick={() => toggle.mutate({ id: b.id, body: { is_active: !b.is_active } })}
-                          >
+                        <RowActionsMenu
+                          label={`${t('common.moreActions')}: ${b.name}`}
+                          actions={[
+                            { label: t('common.edit'), icon: Pencil, onSelect: () => setEditing(b) },
+                            {
+                              label: b.is_active ? t('branches.deactivate') : t('branches.activate'),
+                              icon: Power,
+                              onSelect: flip,
+                              disabled: pending,
+                            },
+                          ]}
+                        />
+                        <div className="hidden items-center gap-1 sm:inline-flex">
+                          <Button variant="ghost" size="sm" disabled={pending} onClick={flip}>
                             {pending && <Spinner />}
                             {b.is_active ? t('branches.deactivate') : t('branches.activate')}
                           </Button>

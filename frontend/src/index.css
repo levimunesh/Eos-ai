@@ -1,100 +1,245 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/geist/wght.css';
 
 /*
-  EOS AI tokens. Mineral paper background, petrol ink for the brand surface, a single
-  green reserved for "active / healthy" status. IBM Plex is chosen partly because
-  IBM Plex Sans Arabic exists for the RTL phase.
+  EOS AI design tokens.
+  Neutral, quiet surfaces; one "dawn" gradient (Eos is the goddess of dawn) reserved for the
+  brand mark, primary actions, active navigation and progress. Both themes are tuned
+  separately rather than inverted. Text pairs meet WCAG AA in both.
 */
-@theme {
-  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-display: 'IBM Plex Sans Condensed', 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
 
-  --color-paper: #f4f6f5;
-  --color-surface: #ffffff;
-  --color-sunken: #eef2f1;
-  --color-ink: #15201f;
-  --color-ink-2: #3a4846;
-  --color-muted: #5f6c6a;
-  --color-line: #dbe2e0;
-  --color-line-strong: #c3cdca;
-  --color-petrol: #123b3f;
-  --color-petrol-700: #0d2e31;
-  --color-petrol-500: #1f5a60;
-  --color-petrol-100: #dce9e8;
-  --color-petrol-50: #edf4f3;
-  --color-signal: #2b7a57;
-  --color-signal-50: #e5f2ec;
-  --color-amber: #8a5d0b;
-  --color-amber-50: #f7efdf;
-  --color-danger: #b3261e;
-  --color-danger-50: #fbeceb;
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
-  --radius-sm: 4px;
-  --radius-md: 6px;
+:root {
+  color-scheme: light;
+  --canvas: #f7f8fa;
+  --surface: #ffffff;
+  --subtle: #f0f2f5;
+  --elevated: #ffffff;
+  --line: #e3e6eb;
+  --line-strong: #cdd2da;
+  --fg: #14171c;
+  --fg-2: #3c424d;
+  --muted: #5f6675;
+  --accent: #3a4fe0;
+  --accent-hover: #3244cc;
+  --accent-text: #3244cc;
+  --accent-soft: #eef0ff;
+  --accent-fg: #ffffff;
+  --success: #11795a;
+  --success-soft: #e8f5ef;
+  --warning: #9a5800;
+  --warning-soft: #fdf3e3;
+  --danger: #c93b32;
+  --danger-text: #c93b32;
+  --danger-soft: #fdeeed;
+  --overlay: rgb(15 17 21 / 0.42);
+  --ring: rgb(58 79 224 / 0.55);
+  --ring-halo: rgb(58 79 224 / 0.16);
+  --skeleton: #e9ecf1;
+
+  --dawn: linear-gradient(135deg, #3a4fe0 0%, #6e48dc 55%, #e0577a 100%);
+  --dawn-button: linear-gradient(180deg, #4457e6 0%, #3a4fe0 55%, #3546d6 100%);
+  --dawn-button-hover: linear-gradient(180deg, #3d50dc 0%, #3244cc 100%);
+
+  --shadow-xs: 0 1px 2px rgb(16 24 40 / 0.05);
+  --shadow-sm: 0 1px 2px rgb(16 24 40 / 0.04), 0 2px 6px -1px rgb(16 24 40 / 0.06);
+  --shadow-md: 0 1px 2px rgb(16 24 40 / 0.04), 0 8px 20px -6px rgb(16 24 40 / 0.12);
+  --shadow-lg: 0 2px 6px rgb(16 24 40 / 0.06), 0 28px 56px -16px rgb(16 24 40 / 0.28);
+  --inset-highlight: inset 0 1px 0 rgb(255 255 255 / 0.18);
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --canvas: #0e1014;
+  --surface: #14171c;
+  --subtle: #1a1e25;
+  --elevated: #1b1f27;
+  --line: #252a33;
+  --line-strong: #343a45;
+  --fg: #eceef2;
+  --fg-2: #bcc2cc;
+  --muted: #8c94a4;
+  --accent: #4f5fe8;
+  --accent-hover: #4655dd;
+  --accent-text: #aeb6ff;
+  --accent-soft: #1e2340;
+  --accent-fg: #ffffff;
+  --success: #4fd69c;
+  --success-soft: #10291f;
+  --warning: #f2b65a;
+  --warning-soft: #2c2212;
+  --danger: #c93b32;
+  --danger-text: #ff8a82;
+  --danger-soft: #36191a;
+  --overlay: rgb(0 0 0 / 0.6);
+  --ring: rgb(140 154 255 / 0.7);
+  --ring-halo: rgb(140 154 255 / 0.18);
+  --skeleton: #222731;
+
+  --dawn: linear-gradient(135deg, #5466f0 0%, #7c57e6 55%, #e8698a 100%);
+  --dawn-button: linear-gradient(180deg, #5767ee 0%, #4f5fe8 55%, #4655dd 100%);
+  --dawn-button-hover: linear-gradient(180deg, #4d5de6 0%, #4250d4 100%);
+
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-sm: 0 0 0 1px rgb(255 255 255 / 0.02), 0 2px 6px rgb(0 0 0 / 0.35);
+  --shadow-md: 0 0 0 1px rgb(255 255 255 / 0.03), 0 10px 24px -8px rgb(0 0 0 / 0.6);
+  --shadow-lg: 0 0 0 1px rgb(255 255 255 / 0.04), 0 30px 60px -16px rgb(0 0 0 / 0.75);
+  --inset-highlight: inset 0 1px 0 rgb(255 255 255 / 0.14);
+}
+
+@theme inline {
+  /* An Arabic companion (e.g. IBM Plex Sans Arabic) slots in via --font-arabic for RTL. */
+  --font-sans: 'Geist Variable', var(--font-arabic, ui-sans-serif), system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-subtle: var(--subtle);
+  --color-elevated: var(--elevated);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-text: var(--accent-text);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-fg: var(--accent-fg);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-text: var(--danger-text);
+  --color-danger-soft: var(--danger-soft);
+  --color-overlay: var(--overlay);
+  --color-skeleton: var(--skeleton);
+
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+
+  --radius-sm: 5px;
+  --radius-md: 7px;
   --radius-lg: 10px;
+  --radius-xl: 14px;
 
   --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
 }
 
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
+    background: var(--canvas);
   }
   body {
-    background: var(--color-paper);
-    color: var(--color-ink);
+    background: var(--canvas);
+    color: var(--fg);
     font-family: var(--font-sans);
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
     line-height: 1.5;
+    font-feature-settings: 'ss01', 'cv11';
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
   h1, h2, h3 {
-    font-family: var(--font-display);
-    letter-spacing: -0.005em;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
   }
   :focus-visible {
-    outline: 2px solid var(--color-petrol-500);
+    outline: 2px solid var(--ring);
     outline-offset: 2px;
+    border-radius: var(--radius-sm);
   }
   ::selection {
-    background: var(--color-petrol-100);
+    background: var(--accent-soft);
+    color: var(--fg);
   }
 }
+
+/* Designed focus for form controls: accent border plus a soft halo instead of an outline. */
+.focus-field:focus-visible,
+.focus-field:focus-within:has(:focus-visible) {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--ring-halo);
+}
+
+.bg-dawn { background-image: var(--dawn); }
+.btn-dawn {
+  background-image: var(--dawn-button);
+  box-shadow: var(--inset-highlight), 0 1px 2px rgb(16 24 40 / 0.18), 0 0 0 1px rgb(39 52 180 / 0.35);
+}
+.btn-dawn:hover { background-image: var(--dawn-button-hover); }
+
+/* Hairline hover card lift, used only on interactive rows/cards. */
+.surface-raised {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Deterministic avatar tint from --h (hue); separate tuning per theme keeps AA text. */
+.avatar {
+  background: hsl(var(--h) 75% 94%);
+  color: hsl(var(--h) 55% 28%);
+}
+[data-theme='dark'] .avatar {
+  background: hsl(var(--h) 32% 22%);
+  color: hsl(var(--h) 80% 82%);
+}
+
+/* Collapsed-sidebar tooltips, positioned with logical properties for RTL. */
+.sb-tip { position: relative; }
+.sb-collapsed .sb-tip:hover::after,
+.sb-collapsed .sb-tip:focus-visible::after {
+  content: attr(data-tip);
+  position: absolute;
+  inset-inline-start: calc(100% + 10px);
+  top: 50%;
+  translate: 0 -50%;
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--fg);
+  color: var(--canvas);
+  font-size: 0.75rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-md);
+  z-index: 60;
+  pointer-events: none;
+}
+
+/* ---------- Motion: short, purposeful, and off under reduced motion ---------- */
+@keyframes eos-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes eos-pop { from { opacity: 0; transform: translateY(6px) scale(0.985); } to { opacity: 1; transform: none; } }
+@keyframes eos-sheet { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes eos-drawer { from { transform: translateX(-100%); } to { transform: none; } }
+@keyframes eos-drawer-rtl { from { transform: translateX(100%); } to { transform: none; } }
+@keyframes eos-toast { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes eos-page { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+@keyframes eos-menu { from { opacity: 0; transform: translateY(-4px) scale(0.98); } to { opacity: 1; transform: none; } }
+
+.anim-overlay[data-state='open'] { animation: eos-fade 160ms ease-out; }
+.anim-dialog[data-state='open'] { animation: eos-sheet 240ms cubic-bezier(0.32, 0.72, 0, 1); }
+@media (min-width: 640px) {
+  .anim-dialog[data-state='open'] { animation: eos-pop 170ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+}
+.anim-drawer[data-state='open'] { animation: eos-drawer 220ms cubic-bezier(0.32, 0.72, 0, 1); }
+[dir='rtl'] .anim-drawer[data-state='open'] { animation-name: eos-drawer-rtl; }
+.anim-toast { animation: eos-toast 200ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+.anim-page { animation: eos-page 180ms ease-out; }
+.anim-menu[data-state='open'] { animation: eos-menu 140ms ease-out; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
-
-/* Empty KPI slot: a ruled placeholder where a figure will sit. */
-.kpi-slot {
-  background-image: repeating-linear-gradient(
-    135deg,
-    var(--color-line) 0 1px,
-    transparent 1px 7px
-  );
-}
-
-@keyframes eos-drawer-in {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(0); }
-}
-@keyframes eos-drawer-in-rtl {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
-}
-@keyframes eos-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes eos-pop-in {
-  from { opacity: 0; transform: translateY(4px) scale(0.99); }
-  to { opacity: 1; transform: none; }
-}
-.anim-drawer[data-state='open'] { animation: eos-drawer-in 180ms ease-out; }
-[dir='rtl'] .anim-drawer[data-state='open'] { animation-name: eos-drawer-in-rtl; }
-.anim-overlay[data-state='open'] { animation: eos-fade-in 150ms ease-out; }
-.anim-dialog[data-state='open'] { animation: eos-pop-in 160ms ease-out; }

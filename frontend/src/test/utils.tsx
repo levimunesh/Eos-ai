@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render } from '@testing-library/react'
 import type { ReactElement } from 'react'
 import { MemoryRouter } from 'react-router'
+import { ThemeProvider } from '@/lib/theme-context'
 import { vi } from 'vitest'
 import { OrgContext, type OrgState } from '@/features/orgs/org-context'
 import { createApiClient } from '@/lib/api'
@@ -13,9 +14,12 @@ export const ORG_ID = '11111111-1111-4111-8111-111111111111'
 export function makeMe(role: Role): Me {
   return {
     id: 'user-1',
-    email: 'owner@example.com',
-    full_name: 'Test User',
-    memberships: [{ org_id: ORG_ID, org_name: 'Al Noor Trading', role, is_demo: false }],
+    email: 'sara.haddad@eos.example',
+    full_name: 'Sara Haddad',
+    memberships: [
+      { org_id: ORG_ID, org_name: 'Eos Trading Co.', role, is_demo: false },
+      { org_id: '22222222-2222-4222-8222-222222222222', org_name: 'Eos Demo Retail', role: 'viewer', is_demo: true },
+    ],
   }
 }
 
@@ -38,7 +42,10 @@ export function routeFetch(routes: Routes) {
   })
 }
 
-export function renderWithOrg(ui: ReactElement, { role, routes = {} }: { role: Role; routes?: Routes }) {
+export function renderWithOrg(
+  ui: ReactElement,
+  { role, routes = {}, path = '/' }: { role: Role; routes?: Routes; path?: string },
+) {
   const fetchImpl = routeFetch(routes)
   const api = createApiClient({
     baseUrl: 'http://api.test/api/v1',
@@ -58,11 +65,13 @@ export function renderWithOrg(ui: ReactElement, { role, routes = {} }: { role: R
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } })
   const result = render(
     <QueryClientProvider client={qc}>
-      <MemoryRouter>
-        <ApiContext.Provider value={api}>
-          <OrgContext.Provider value={org}>{ui}</OrgContext.Provider>
-        </ApiContext.Provider>
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter initialEntries={[path]}>
+          <ApiContext.Provider value={api}>
+            <OrgContext.Provider value={org}>{ui}</OrgContext.Provider>
+          </ApiContext.Provider>
+        </MemoryRouter>
+      </ThemeProvider>
     </QueryClientProvider>,
   )
   return { ...result, fetchImpl }

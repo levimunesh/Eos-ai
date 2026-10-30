@@ -25,21 +25,21 @@ export function InvitePage() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-paper">
+    <div className="flex min-h-dvh flex-col bg-canvas">
       <header className="flex h-14 items-center border-b border-line px-4 sm:px-6">
-        <Wordmark tone="dark" />
+        <Wordmark />
       </header>
       <main className="flex flex-1 items-start justify-center px-4 py-12">
-        <div className="w-full max-w-md rounded-lg border border-line bg-surface p-6">
+        <div className="w-full max-w-md surface-raised rounded-xl p-6">
           <h1 className="text-xl font-semibold">{t('invite.title')}</h1>
-          <p className="mt-2 text-sm text-ink-2">{t('invite.body', { email })}</p>
+          <p className="mt-2 text-sm text-fg-2">{t('invite.body', { email })}</p>
 
           {message && (
-            <div role="alert" className="mt-4 flex items-start gap-2 rounded-md bg-danger-50 px-3 py-2 text-sm text-danger">
+            <div role="alert" className="mt-4 flex items-start gap-2 rounded-md bg-danger-soft px-3 py-2 text-sm text-danger-text">
               <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
               <div className="flex flex-col gap-1">
                 <span>{message}</span>
-                {code === 'email_mismatch' && <span className="text-ink-2">{t('invite.mismatchHint')}</span>}
+                {code === 'email_mismatch' && <span className="text-fg-2">{t('invite.mismatchHint')}</span>}
               </div>
             </div>
           )}

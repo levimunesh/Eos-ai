@@ -38,14 +38,14 @@ export function LoginPage() {
       footer={
         <>
           {t('auth.noAccount')}{' '}
-          <Link to={withNext('/signup')} className="font-medium text-petrol-500 hover:underline">
+          <Link to={withNext('/signup')} className="font-medium text-accent-text hover:underline">
             {t('auth.createAccountLink')}
           </Link>
         </>
       }
     >
       {params.get('expired') && (
-        <p role="status" className="mb-4 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber">
+        <p role="status" className="mb-4 rounded-md bg-warning-soft px-3 py-2 text-sm text-warning">
           {t('auth.sessionExpired')}
         </p>
       )}
@@ -71,16 +71,16 @@ export function LoginPage() {
           />
         </Field>
         <div className="-mt-1 flex justify-end">
-          <Link to="/forgot-password" className="text-sm text-petrol-500 hover:underline">
+          <Link to="/forgot-password" className="text-sm text-accent-text hover:underline">
             {t('auth.forgotLink')}
           </Link>
         </div>
         {error && (
-          <p role="alert" className="rounded-md bg-danger-50 px-3 py-2 text-sm text-danger">
+          <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-sm text-danger-text">
             {error}
           </p>
         )}
-        <Button type="submit" size="lg" disabled={isSubmitting}>
+        <Button type="submit" size="lg" className="mt-1" disabled={isSubmitting}>
           {isSubmitting ? t('auth.signingIn') : t('auth.signInAction')}
         </Button>
       </form>

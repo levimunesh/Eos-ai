@@ -3,17 +3,19 @@ import { t } from '@/lib/strings'
 
 export function ConfigErrorScreen({ missing }: { missing: string[] }) {
   return (
-    <main className="flex min-h-dvh items-center justify-center bg-paper px-4 py-10">
-      <div role="alert" className="w-full max-w-lg rounded-lg border border-line bg-surface p-6">
+    <main className="flex min-h-dvh items-center justify-center bg-canvas px-4 py-10">
+      <div role="alert" className="surface-raised w-full max-w-lg rounded-xl p-6">
         <div className="flex items-start gap-3">
-          <TriangleAlert aria-hidden className="mt-0.5 size-5 shrink-0 text-amber" />
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-warning-soft text-warning">
+            <TriangleAlert aria-hidden className="size-4" />
+          </span>
           <div className="flex flex-col gap-3">
-            <h1 className="text-lg font-semibold">{t('config.title')}</h1>
-            <p className="text-sm text-ink-2">{t('config.body')}</p>
+            <h1 className="text-base font-semibold">{t('config.title')}</h1>
+            <p className="text-sm text-fg-2">{t('config.body')}</p>
             <ul className="flex flex-col gap-1">
               {missing.map((name) => (
                 <li key={name}>
-                  <code className="rounded-sm bg-sunken px-1.5 py-0.5 text-sm">{name}</code>
+                  <code className="rounded bg-subtle px-1.5 py-0.5 text-[0.8125rem] ring-1 ring-line ring-inset">{name}</code>
                 </li>
               ))}
             </ul>

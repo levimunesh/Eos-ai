@@ -42,25 +42,25 @@ describe('api client', () => {
 
   it('sends JSON bodies', async () => {
     const { api, fetchImpl } = setup(new Response(JSON.stringify({ id: 'b' }), { status: 201 }))
-    await api.post('/branches', { code: 'MCT1', name: 'Muscat' })
+    await api.post('/branches', { code: 'EOS-01', name: 'Central' })
     const init = fetchImpl.mock.calls[0][1] as RequestInit
     expect(init.method).toBe('POST')
-    expect(init.body).toBe(JSON.stringify({ code: 'MCT1', name: 'Muscat' }))
+    expect(init.body).toBe(JSON.stringify({ code: 'EOS-01', name: 'Central' }))
     expect(headersOf(fetchImpl)['Content-Type']).toBe('application/json')
   })
 
   it('turns the error envelope into a typed ApiError', async () => {
     const envelope = {
-      error: { code: 'duplicate_code', message: "Branch code 'MCT1' already exists", details: null },
+      error: { code: 'duplicate_code', message: "Branch code 'EOS-01' already exists", details: null },
     }
     const { api } = setup(new Response(JSON.stringify(envelope), { status: 409 }))
-    const err = await api.post('/branches', { code: 'MCT1', name: 'x' }).catch((e: unknown) => e)
+    const err = await api.post('/branches', { code: 'EOS-01', name: 'x' }).catch((e: unknown) => e)
 
     expect(err).toBeInstanceOf(ApiError)
     const apiErr = err as ApiError
     expect(apiErr.status).toBe(409)
     expect(apiErr.code).toBe('duplicate_code')
-    expect(apiErr.message).toBe("Branch code 'MCT1' already exists")
+    expect(apiErr.message).toBe("Branch code 'EOS-01' already exists")
   })
 
   it('calls onUnauthorized on 401', async () => {

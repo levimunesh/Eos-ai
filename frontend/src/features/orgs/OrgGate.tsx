@@ -16,8 +16,8 @@ export function OrgGate() {
   if (me.isPending) return <FullPageSpinner />
   if (me.isError) {
     return (
-      <main className="flex min-h-dvh items-center justify-center bg-paper px-4">
-        <div className="w-full max-w-md rounded-lg border border-line bg-surface">
+      <main className="flex min-h-dvh items-center justify-center bg-canvas px-4">
+        <div className="w-full max-w-md surface-raised rounded-xl">
           <ErrorBlock error={me.error} onRetry={() => void me.refetch()} />
         </div>
       </main>

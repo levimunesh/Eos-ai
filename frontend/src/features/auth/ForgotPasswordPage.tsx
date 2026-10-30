@@ -30,13 +30,13 @@ export function ForgotPasswordPage() {
     <AuthLayout
       title={t('auth.forgotTitle')}
       footer={
-        <Link to="/login" className="font-medium text-petrol-500 hover:underline">
+        <Link to="/login" className="font-medium text-accent-text hover:underline">
           {t('auth.backToSignIn')}
         </Link>
       }
     >
       {sentTo ? (
-        <p role="status" className="rounded-md border border-line bg-surface p-4 text-sm text-ink-2">
+        <p role="status" className="surface-raised rounded-lg p-4 text-sm text-fg-2">
           {t('auth.forgotSent', { email: sentTo })}
         </p>
       ) : (
@@ -53,11 +53,11 @@ export function ForgotPasswordPage() {
             />
           </Field>
           {error && (
-            <p role="alert" className="rounded-md bg-danger-50 px-3 py-2 text-sm text-danger">
+            <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-sm text-danger-text">
               {error}
             </p>
           )}
-          <Button type="submit" size="lg" disabled={isSubmitting}>
+          <Button type="submit" size="lg" className="mt-1" disabled={isSubmitting}>
             {isSubmitting ? t('auth.sending') : t('auth.forgotAction')}
           </Button>
         </form>

@@ -13,6 +13,7 @@ import { currencyName } from '@/lib/currencies'
 import { decimalStringToPercent } from '@/lib/percent'
 import { useOrgQuery, useUpdateOrgSettings } from '@/lib/queries'
 import { t } from '@/lib/strings'
+import { useToast } from '@/lib/toast'
 import type { Org } from '@/lib/types'
 import { OrgSettingsFields } from './OrgFields'
 import { useOrg } from './org-context'
@@ -31,6 +32,7 @@ function toValues(org: Org): OrgSettingsValues {
 
 function SettingsForm({ org, canEdit }: { org: Org; canEdit: boolean }) {
   const update = useUpdateOrgSettings()
+  const toast = useToast()
   const form = useForm<OrgSettingsValues>({ resolver: zodResolver(orgSettingsSchema), defaultValues: toValues(org) })
   const { errors, isDirty, isSubmitting } = form.formState
 
@@ -41,6 +43,7 @@ function SettingsForm({ org, canEdit }: { org: Org; canEdit: boolean }) {
   const submit = form.handleSubmit(async (values) => {
     try {
       await update.mutateAsync(toSettingsPayload(values))
+      toast.success(t('org.savedToast'))
     } catch {
       // Rendered via update.error.
     }
@@ -65,7 +68,7 @@ function SettingsForm({ org, canEdit }: { org: Org; canEdit: boolean }) {
             <div
               id="baseCurrency"
               aria-describedby="baseCurrency-note"
-              className="flex h-9 items-center gap-2 rounded-md border border-line bg-sunken px-3 text-sm"
+              className="flex h-11 items-center gap-2 rounded-md border border-line bg-subtle px-3 text-sm sm:h-9"
             >
               <Lock aria-hidden className="size-3.5 text-muted" />
               <span className="font-medium">{org.base_currency}</span>
@@ -92,7 +95,7 @@ function SettingsForm({ org, canEdit }: { org: Org; canEdit: boolean }) {
         {canEdit && (
           <CardFooter>
             {update.isSuccess && !isDirty && (
-              <span role="status" className="me-auto flex items-center gap-1.5 text-sm text-signal">
+              <span role="status" className="me-auto flex items-center gap-1.5 text-sm text-success">
                 <CircleCheck aria-hidden className="size-4" />
                 {t('common.saved')}
               </span>

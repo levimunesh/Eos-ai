@@ -17,6 +17,7 @@ import { describedBy, Field } from '@/components/ui/form-field'
 import { Input } from '@/components/ui/input'
 import { useCreateBranch, useUpdateBranch } from '@/lib/queries'
 import { t } from '@/lib/strings'
+import { useToast } from '@/lib/toast'
 import type { Branch } from '@/lib/types'
 import {
   branchCreateSchema,
@@ -27,6 +28,7 @@ import {
 
 export function CreateBranchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
   const create = useCreateBranch()
+  const toast = useToast()
   const form = useForm<BranchCreateValues>({
     resolver: zodResolver(branchCreateSchema),
     defaultValues: { code: '', name: '', city: '' },
@@ -43,7 +45,8 @@ export function CreateBranchDialog({ open, onOpenChange }: { open: boolean; onOp
 
   const submit = form.handleSubmit(async (v) => {
     try {
-      await create.mutateAsync({ code: v.code, name: v.name, city: v.city || null })
+      const branch = await create.mutateAsync({ code: v.code, name: v.name, city: v.city || null })
+      toast.success(t('branches.created', { code: branch.code }))
       onOpenChange(false)
     } catch {
       // create.error
@@ -109,6 +112,7 @@ export function CreateBranchDialog({ open, onOpenChange }: { open: boolean; onOp
 
 export function EditBranchDialog({ branch, onClose }: { branch: Branch | null; onClose: () => void }) {
   const update = useUpdateBranch()
+  const toast = useToast()
   const form = useForm<BranchEditValues>({ resolver: zodResolver(branchEditSchema), defaultValues: { name: '', city: '' } })
   const { errors, isSubmitting } = form.formState
 
@@ -124,6 +128,7 @@ export function EditBranchDialog({ branch, onClose }: { branch: Branch | null; o
     if (!branch) return
     try {
       await update.mutateAsync({ id: branch.id, body: { name: v.name, city: v.city || null } })
+      toast.success(t('branches.updated', { code: branch.code }))
       onClose()
     } catch {
       // update.error
@@ -137,7 +142,7 @@ export function EditBranchDialog({ branch, onClose }: { branch: Branch | null; o
           <DialogHeader>
             <DialogTitle>{t('branches.editTitle', { name: branch?.name ?? '' })}</DialogTitle>
             <DialogDescription>
-              {t('branches.code')}: <span className="font-medium text-ink">{branch?.code}</span>
+              {t('branches.code')}: <span className="font-medium text-fg">{branch?.code}</span>
             </DialogDescription>
           </DialogHeader>
           <DialogBody className="flex flex-col gap-4">

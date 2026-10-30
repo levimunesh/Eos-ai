@@ -125,9 +125,9 @@ export function Combobox({
             openList()
           }
         }}
-        className={cn(inputClass, 'flex items-center justify-between gap-2 text-start')}
+        className={cn(inputClass, 'flex items-center justify-between gap-2 text-start', open && 'border-accent shadow-[0_0_0_3px_var(--ring-halo)]')}
       >
-        <span className={cn('truncate', !selected && 'text-muted/80')}>
+        <span className={cn('truncate', !selected && 'text-muted')}>
           {selected ? (
             <>
               <span className="font-medium">{selected.label}</span>
@@ -140,7 +140,7 @@ export function Combobox({
         <ChevronsUpDown aria-hidden className="size-4 shrink-0 text-muted" />
       </button>
       {open && (
-        <div className="absolute inset-x-0 top-full z-40 mt-1 overflow-hidden rounded-md border border-line-strong bg-surface shadow-[0_8px_24px_-8px_rgb(13_46_49/0.25)]">
+        <div data-state="open" className="anim-menu absolute inset-x-0 top-full z-40 mt-1.5 overflow-hidden rounded-lg border border-line bg-elevated shadow-lg">
           <div className="flex items-center gap-2 border-b border-line px-3">
             <Search aria-hidden className="size-4 text-muted" />
             <input
@@ -157,7 +157,7 @@ export function Combobox({
                 setActive(0)
               }}
               onKeyDown={onKey}
-              className="h-9 w-full bg-transparent text-sm outline-none placeholder:text-muted/80"
+              className="h-11 w-full bg-transparent text-sm outline-none placeholder:text-muted sm:h-10"
               placeholder={t('common.search')}
             />
           </div>
@@ -174,15 +174,15 @@ export function Combobox({
                 onClick={() => choose(opt)}
                 onMouseMove={() => setActive(i)}
                 className={cn(
-                  'flex cursor-pointer items-center gap-2 px-3 py-1.5 text-sm',
-                  i === active && 'bg-petrol-50',
+                  'mx-1 flex min-h-11 cursor-pointer items-center gap-2 rounded-md px-2 text-sm sm:min-h-8',
+                  i === active && 'bg-subtle',
                 )}
               >
                 <Check
                   aria-hidden
-                  className={cn('size-4 shrink-0 text-petrol', opt.value === value ? 'opacity-100' : 'opacity-0')}
+                  className={cn('size-4 shrink-0 text-accent-text', opt.value === value ? 'opacity-100' : 'opacity-0')}
                 />
-                <span className="font-medium">{opt.label}</span>
+                <span className="font-medium tabular-nums">{opt.label}</span>
                 {opt.hint && <span className="truncate text-muted">{opt.hint}</span>}
               </li>
             ))}

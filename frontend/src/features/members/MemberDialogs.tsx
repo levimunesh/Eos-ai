@@ -18,6 +18,7 @@ import { describedBy, Field } from '@/components/ui/form-field'
 import { Input } from '@/components/ui/input'
 import { useCreateInvitation, useUpdateMember } from '@/lib/queries'
 import { t } from '@/lib/strings'
+import { useToast } from '@/lib/toast'
 import type { Branch, InvitationCreated, Member } from '@/lib/types'
 import { inviteLink } from './access'
 import { AccessFields } from './AccessFields'
@@ -33,6 +34,7 @@ export function EditAccessDialog({
   onClose: () => void
 }) {
   const update = useUpdateMember()
+  const toast = useToast()
   const form = useForm<AccessValues>({
     resolver: zodResolver(accessSchema),
     defaultValues: { role: 'viewer', allBranches: true, branchIds: [] },
@@ -64,6 +66,7 @@ export function EditAccessDialog({
     }
     try {
       await update.mutateAsync({ id: member.membership_id, body })
+      toast.success(t('members.updated', { name: member.full_name || member.email }))
       onClose()
     } catch {
       // update.error
@@ -185,7 +188,7 @@ function InviteDialogContent({ branches }: { branches: Branch[] }) {
         </DialogHeader>
         <DialogBody className="flex flex-col gap-4">
           <CopyField value={inviteLink(created.token)} />
-          <p className="flex items-start gap-2 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber">
+          <p className="flex items-start gap-2 rounded-lg bg-warning-soft px-3 py-2.5 text-sm text-warning">
             <Info aria-hidden className="mt-0.5 size-4 shrink-0" />
             {t('invitations.emailNotBuilt')}
           </p>

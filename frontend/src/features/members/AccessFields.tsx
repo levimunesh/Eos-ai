@@ -29,8 +29,8 @@ export function AccessFields({ control, errors, branches, idPrefix, allBranches 
                 <label
                   key={r}
                   className={cn(
-                    'flex cursor-pointer items-start gap-3 rounded-md border px-3 py-2.5',
-                    field.value === r ? 'border-petrol-500 bg-petrol-50' : 'border-line hover:bg-sunken/60',
+                    'flex min-h-11 cursor-pointer items-start gap-3 rounded-lg border px-3 py-2.5 transition-colors has-[:focus-visible]:shadow-[0_0_0_3px_var(--ring-halo)]',
+                    field.value === r ? 'border-accent bg-accent-soft' : 'border-line hover:bg-subtle',
                   )}
                 >
                   <input
@@ -39,7 +39,7 @@ export function AccessFields({ control, errors, branches, idPrefix, allBranches 
                     value={r}
                     checked={field.value === r}
                     onChange={() => field.onChange(r)}
-                    className="mt-1 accent-[var(--color-petrol)]"
+                    className="mt-1 accent-[var(--accent)] focus-visible:outline-none"
                   />
                   <span className="flex flex-col">
                     <span className="text-sm font-medium">{t(`roles.${r}`)}</span>
@@ -83,13 +83,13 @@ export function AccessFields({ control, errors, branches, idPrefix, allBranches 
                   <p className="text-xs text-muted">{t('members.chooseBranches')}</p>
                   <ul
                     aria-describedby={errors.branchIds ? `${idPrefix}-branches-error` : undefined}
-                    className="max-h-48 divide-y divide-line overflow-y-auto rounded-md border border-line"
+                    className="max-h-56 divide-y divide-line overflow-y-auto rounded-lg border border-line"
                   >
                     {branches.map((b) => {
                       const id = `${idPrefix}-b-${b.id}`
                       const checked = field.value.includes(b.id)
                       return (
-                        <li key={b.id} className="flex items-center gap-3 px-3 py-2">
+                        <li key={b.id} className="flex min-h-11 items-center gap-3 px-3 py-2">
                           <Checkbox
                             id={id}
                             checked={checked}
@@ -99,7 +99,7 @@ export function AccessFields({ control, errors, branches, idPrefix, allBranches 
                           />
                           <Label htmlFor={id} className="flex min-w-0 flex-1 gap-2 font-normal">
                             <span className="font-medium">{b.code}</span>
-                            <span className="truncate text-ink-2">{b.name}</span>
+                            <span className="truncate text-fg-2">{b.name}</span>
                             {!b.is_active && <span className="text-xs text-muted">({t('branches.inactive')})</span>}
                           </Label>
                         </li>
@@ -107,7 +107,7 @@ export function AccessFields({ control, errors, branches, idPrefix, allBranches 
                     })}
                   </ul>
                   {errors.branchIds && (
-                    <p id={`${idPrefix}-branches-error`} role="alert" className="text-xs text-danger">
+                    <p id={`${idPrefix}-branches-error`} role="alert" className="text-xs text-danger-text">
                       {errors.branchIds.message}
                     </p>
                   )}

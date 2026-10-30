@@ -13,7 +13,6 @@ import type { OrgSettingsValues } from './schemas'
 const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1)
 
 interface Props {
-  // Both onboarding and settings forms share these fields.
   control: Control<OrgSettingsValues>
   register: UseFormRegister<OrgSettingsValues>
   errors: FieldErrors<OrgSettingsValues>
@@ -21,8 +20,8 @@ interface Props {
   currentTimezone?: string
 }
 
-/** Timezone, tax, fiscal year and date format: the settings shared by onboarding and Settings. */
-export function OrgSettingsFields({ control, register, errors, disabled, currentTimezone }: Props) {
+/** Timezone and date format. */
+export function RegionFields({ control, register, errors, disabled, currentTimezone }: Props) {
   const tzOptions = timezoneOptions(currentTimezone)
   return (
     <>
@@ -44,7 +43,23 @@ export function OrgSettingsFields({ control, register, errors, disabled, current
           )}
         />
       </Field>
+      <Field id="dateFormat" label={t('onboarding.dateFormat')}>
+        <Select id="dateFormat" disabled={disabled} {...register('dateFormat')}>
+          {DATE_FORMATS.map((f) => (
+            <option key={f} value={f}>
+              {f}
+            </option>
+          ))}
+        </Select>
+      </Field>
+    </>
+  )
+}
 
+/** Tax rate, tax-inclusive prices and fiscal year start. */
+export function TaxFields({ control, register, errors, disabled }: Props) {
+  return (
+    <>
       <div className="grid gap-5 sm:grid-cols-2">
         <Field id="taxRatePercent" label={t('onboarding.taxRate')} hint={t('onboarding.taxRateHint')} error={errors.taxRatePercent?.message}>
           <Input
@@ -73,7 +88,7 @@ export function OrgSettingsFields({ control, register, errors, disabled, current
         control={control}
         name="pricesIncludeTax"
         render={({ field }) => (
-          <div className="flex items-start gap-3">
+          <div className="flex items-start gap-3 rounded-lg border border-line bg-subtle/50 p-3.5">
             <Checkbox
               id="pricesIncludeTax"
               checked={field.value}
@@ -91,16 +106,15 @@ export function OrgSettingsFields({ control, register, errors, disabled, current
           </div>
         )}
       />
+    </>
+  )
+}
 
-      <Field id="dateFormat" label={t('onboarding.dateFormat')}>
-        <Select id="dateFormat" disabled={disabled} {...register('dateFormat')}>
-          {DATE_FORMATS.map((f) => (
-            <option key={f} value={f}>
-              {f}
-            </option>
-          ))}
-        </Select>
-      </Field>
+export function OrgSettingsFields(props: Props) {
+  return (
+    <>
+      <RegionFields {...props} />
+      <TaxFields {...props} />
     </>
   )
 }

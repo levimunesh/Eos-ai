@@ -10,10 +10,14 @@ describe('onboarding form', () => {
     const onSubmit = vi.fn()
     render(<OnboardingForm onSubmit={onSubmit} />)
 
-    await user.type(screen.getByLabelText('Organisation name'), 'Al Noor Trading')
-    await user.click(screen.getByRole('button', { name: 'Create organisation' }))
+    await user.type(screen.getByLabelText('Organisation name'), 'Eos Trading Co.')
+    await user.click(screen.getByRole('button', { name: 'Continue' }))
+    // Step 2: currency is required before moving on.
+    expect(await screen.findByLabelText('Base currency')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Continue' }))
 
     expect(await screen.findByText('Choose a base currency')).toBeInTheDocument()
+    expect(screen.queryByLabelText('Tax rate (%)')).not.toBeInTheDocument()
     expect(onSubmit).not.toHaveBeenCalled()
   })
 
@@ -22,11 +26,15 @@ describe('onboarding form', () => {
     const onSubmit = vi.fn()
     render(<OnboardingForm onSubmit={onSubmit} />)
 
-    await user.type(screen.getByLabelText('Organisation name'), 'Al Noor Trading')
-    await user.click(screen.getByLabelText('Base currency'))
+    await user.type(screen.getByLabelText('Organisation name'), 'Eos Trading Co.')
+    await user.click(screen.getByRole('button', { name: 'Continue' }))
+
+    await user.click(await screen.findByLabelText('Base currency'))
     await user.type(screen.getByRole('combobox', { name: 'Search' }), 'OMR')
     await user.click(screen.getByRole('option', { name: /OMR/ }))
-    const tax = screen.getByLabelText('Tax rate (%)')
+    await user.click(screen.getByRole('button', { name: 'Continue' }))
+
+    const tax = await screen.findByLabelText('Tax rate (%)')
     await user.clear(tax)
     await user.type(tax, '5')
     await user.click(screen.getByLabelText('Prices include tax'))
@@ -35,7 +43,7 @@ describe('onboarding form', () => {
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1))
     const payload = onSubmit.mock.calls[0][0]
     expect(payload).toMatchObject({
-      name: 'Al Noor Trading',
+      name: 'Eos Trading Co.',
       base_currency: 'OMR',
       tax_rate: '0.05',
       prices_include_tax: true,
@@ -45,10 +53,21 @@ describe('onboarding form', () => {
     expect(typeof payload.timezone).toBe('string')
   })
 
+  it('shows progress and lets the user go back', async () => {
+    const user = userEvent.setup()
+    render(<OnboardingForm onSubmit={vi.fn()} />)
+    expect(screen.getByText('Step 1 of 3')).toBeInTheDocument()
+    await user.type(screen.getByLabelText('Organisation name'), 'Eos Trading Co.')
+    await user.click(screen.getByRole('button', { name: 'Continue' }))
+    expect(await screen.findByText('Step 2 of 3')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Back' }))
+    expect(screen.getByLabelText('Organisation name')).toHaveValue('Eos Trading Co.')
+  })
+
   it('schema: no currency fails, 5% becomes "0.05"', () => {
     const base = {
       name: 'Org',
-      timezone: 'Asia/Muscat',
+      timezone: 'Asia/Dubai',
       taxRatePercent: '5',
       pricesIncludeTax: false,
       fiscalYearStartMonth: '4',
