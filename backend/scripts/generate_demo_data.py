@@ -1,4 +1,4 @@
-"""Generate the EOS AI demo company: a fictional multi-branch trading business.
+"""Generate the EOS AI demo company, "Eos Trading Co.": a fictional multi-branch trading business.
 
 DEMO DATA. Every file carries that label. Nothing here describes a real company.
 
@@ -59,9 +59,9 @@ RAMADAN = (date(2025, 3, 1), date(2025, 3, 29))
 EID = (date(2025, 3, 30), date(2025, 4, 2))
 
 BRANCHES = [
-    ("BR-01", "Central Store", "Muscat", 1.35),
-    ("BR-02", "North Store", "Sohar", 1.00),
-    ("BR-03", "South Store", "Salalah", 0.80),
+    ("EOS-01", "Eos Central", "Muscat", 1.35),
+    ("EOS-02", "Eos North", "Sohar", 1.00),
+    ("EOS-03", "Eos South", "Salalah", 0.80),
 ]
 
 CATEGORIES = {
@@ -76,10 +76,10 @@ CATEGORIES = {
 }
 
 SUPPLIERS = [
-    ("SUP-001", "Gulf Wholesale Trading", "OMR"),
-    ("SUP-002", "Emirates Distribution LLC", "AED"),
-    ("SUP-003", "Global Sourcing Inc", "USD"),
-    ("SUP-004", "Coastal Foods Supply", "OMR"),
+    ("SUP-001", "Eos Demo Supplier A (local)", "OMR"),
+    ("SUP-002", "Eos Demo Supplier B (UAE)", "AED"),
+    ("SUP-003", "Eos Demo Supplier C (import)", "USD"),
+    ("SUP-004", "Eos Demo Supplier D (local)", "OMR"),
 ]
 
 EXPENSE_CATEGORIES = [
@@ -408,7 +408,7 @@ def run(out: Path, seed: int) -> dict:
                 if variable:
                     amt *= Decimal(str(g.rng.uniform(0.8, 1.25)))
                 amt = q3(amt)
-                ccy = "AED" if cat == "Marketing" and code == "BR-01" else BASE
+                ccy = "AED" if cat == "Marketing" and code == "EOS-01" else BASE
                 amount_ccy = q3(amt / FX[ccy]) if ccy != BASE else amt
                 tax = (
                     q3(amount_ccy * TAX)
@@ -478,7 +478,7 @@ def run(out: Path, seed: int) -> dict:
     bad[3] = "SKU-9999"
     messy.append(bad)  # unknown SKU
     bad = list(good[5])
-    bad[1] = "BR-99"
+    bad[1] = "EOS-99"
     messy.append(bad)  # unknown branch
     bad = list(good[6])
     bad[5] = "-2"
@@ -550,6 +550,7 @@ def run(out: Path, seed: int) -> dict:
     answers = {
         "demo": True,
         "label": tag,
+        "company": "Eos Trading Co. (DEMO)",
         "base_currency": BASE,
         "rules": __doc__.split("KPI rules used for expected answers")[1].strip(),
         "year": kpis([(m, c) for m in months for c in codes]),
