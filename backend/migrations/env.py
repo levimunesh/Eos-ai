@@ -13,7 +13,9 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 import app.audit.models  # noqa: F401  (register tables)
 import app.catalog.models  # noqa: F401
+import app.ingest.models  # noqa: F401
 import app.orgs.models  # noqa: F401
+import app.transactions.models  # noqa: F401
 from app.core.config import get_settings
 from app.core.db import SCHEMA, Base
 

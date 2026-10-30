@@ -9,6 +9,7 @@ Read `docs/PHASE_0_PLAN.md` and `DEVELOPMENT_STATUS.md` before changing anything
   `ALTER ROLE eos_app WITH PASSWORD '...'`
 - Migration SQL for Supabase: `cd backend && uv run alembic upgrade <from>:<to> --sql`
 - Run API: `cd backend && cp .env.example .env && uv run uvicorn app.main:app --reload`
+- Import worker (only when `INLINE_JOBS=false` on the API): `cd backend && uv run python worker.py`
 - Generate demo data: `cd backend && uv run python scripts/generate_demo_data.py --out ../demo_data`
 - Backend tests (needs Postgres; set `TEST_PG_ADMIN_URL` if not `postgres@localhost:5432`):
   `cd backend && uv run pytest`
@@ -26,7 +27,7 @@ Read `docs/PHASE_0_PLAN.md` and `DEVELOPMENT_STATUS.md` before changing anything
 - Dates: stored UTC; `business_date` computed in org timezone at import.
 - KPI definitions: exactly as in the brief, section 6; one pure function each with tests.
 - AI: typed tools only, number verifier on every answer (ADR 0004).
-- Imports: `rows_total = imported + rejected + duplicate`, always.
+- Imports: `rows_total = imported + rejected + duplicate`, always (asserted in `pipeline.run`). Never drop a row silently; never guess a date order or a number format.
 - New infrastructure needs an ADR first.
 
 ## Process

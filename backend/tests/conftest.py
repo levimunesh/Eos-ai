@@ -32,6 +32,7 @@ os.environ["DATABASE_URL"] = APP_URL.replace("postgresql://", "postgresql+asyncp
 os.environ["MIGRATIONS_DATABASE_URL"] = OWNER_URL.replace("postgresql://", "postgresql+asyncpg://")
 os.environ["SUPABASE_JWT_SECRET"] = JWT_SECRET
 os.environ["SUPABASE_URL"] = ""
+os.environ["INLINE_JOBS"] = "false"
 
 
 async def _admin_exec(sql: str) -> None:

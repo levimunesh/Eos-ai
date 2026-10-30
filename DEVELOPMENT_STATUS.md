@@ -3,7 +3,8 @@
 Last updated: 2026-10-30
 
 ## Current phase
-Phase 1 — Foundation: **complete, awaiting owner review**. Phase 2 (imports) not started.
+Phase 1 — Foundation: **complete** (owner approved 2026-10-30).
+Phase 2 — Import: **backend complete**; import screens in the frontend are next.
 
 ## Done
 - Phase 0 plan approved with changes: industry-agnostic, multicurrency, Supabase `eos` schema inside mdf-hrms, Arabic later (`docs/PHASE_0_PLAN.md`)
@@ -19,18 +20,32 @@ Phase 1 — Foundation: **complete, awaiting owner review**. Phase 2 (imports) n
 
 - Frontend: React + Vite + Tailwind; Supabase email/password sign-up, sign-in and password reset; onboarding with base-currency picker; org switcher; Organisation settings, Members (invite links, roles, branch access, revoke) and Branches pages; honest empty Overview (no numbers); phone, tablet and desktop layouts; all strings in one module for Arabic later
 
+## Phase 2 (backend) done
+- Business tables: products, product costs, suppliers, FX rates, sales + lines, purchases + lines, expenses, stock counts. Every record keeps its source import and file row number.
+- Import any of 9 record types from CSV or Excel (.xlsx): encoding detection (UTF-8, Arabic Windows cp1256), delimiter sniffing, header-row detection under title rows, sheet choice
+- Column profiles and mapping suggestions (English + Arabic header synonyms); confirmed mappings are remembered per file layout
+- Strict conversion: day/month order from settings, ambiguous numbers like "1,250" rejected unless a thousands separator is set, accounting negatives, AM/PM times, ISO dates
+- Validation as a dry run with a quality report before anything is written; then commit with skip or replace for records already in EOS
+- Every row ends as imported, rejected (with a downloadable reason) or duplicate; checked as an invariant on every run
+- Same-file re-uploads are flagged; branch-scoped managers can only import their own branches; branches import is owner-only
+- Background jobs via the imports table (ADR 0003 revised), single transaction per job, retry on crash
+
 ## In progress
-- Nothing
+- Frontend import screens (upload, mapping, report, history)
 
 ## Next
-- Owner review of Phase 1
-- Phase 2 — Import: upload, preview, mapping, validation, quality report, error download, re-import handling
+- Import screens in the frontend
+- Phase 3 — KPI engine and dashboard
 
 ## Decisions and clarifications made during Phase 1
 - Base currency cannot be changed after creation (it would silently restate every figure).
 - "Transactions" counts every receipt except voided ones; refund receipts count (owner confirmed 2026-10-30). Demo year: 48,475 transactions, average ticket 8.631 OMR.
 - The member list (with emails) is visible to owners and managers only; viewers are told to ask an owner.
 - Member names come from the `full_name` given at sign-up and are kept if a later token omits it.
+- Identical sales lines on one receipt are kept as repeat purchases (a customer can buy the same item twice). They are only treated as duplicates when the file has a line-number column. The report warns when it sees them.
+- Rejected lines don't block the rest of their receipt; the report says so and the error file lists them for re-import.
+- Import "append" mode from the brief is not offered: records with a natural key (receipt, invoice, SKU) can only be skipped or replaced, otherwise totals would double.
+- Uploaded files are stored in the database (`eos.import_files`, 25 MB limit) for now; move to object storage before large customers.
 - COGS uses net quantity (sales minus returns) at the unit cost effective on the sale date.
 - Non-members asking for an org get 404, not 403, so org existence isn't revealed.
 
@@ -46,11 +61,12 @@ Phase 1 — Foundation: **complete, awaiting owner review**. Phase 2 (imports) n
 | 0001 foundation | applied | applied |
 | 0002 pin function search_path | applied | applied |
 | 0003 FK indexes | applied | applied |
+| 0004 business data and imports | applied | applied |
 
 Round-trip checked locally: upgrade → downgrade to base → upgrade.
 
 ## Tests
-- Backend: 66 passing (tenancy isolation via API and raw SQL as `eos_app`, RLS guardrail for every tenant table, auth edge cases, roles, invitations, names, demo generator determinism and independent recomputation)
+- Backend: 112 passing, including full demo-company import whose loaded sales match the independently computed answers (418,364.517 OMR net, 48,475 transactions), messy-file accounting (51 rows = 1 imported + 8 rejected + 42 duplicate), replace mode, re-upload detection, branch-scoped imports and Excel/Arabic parsing. Previously: 66 passing (tenancy isolation via API and raw SQL as `eos_app`, RLS guardrail for every tenant table, auth edge cases, roles, invitations, names, demo generator determinism and independent recomputation)
 - Isolation tests verified to fail when RLS is removed from a table
 - Frontend: 31 passing (API client headers and error envelope, onboarding validation and percent conversion, empty overview shows no figures, role gating for viewer/manager/owner); lint and production build clean
 - Not yet tested: real sign-in against Supabase Auth end to end (the build environment can't reach Supabase); first run should be done by the owner

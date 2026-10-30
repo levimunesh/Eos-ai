@@ -21,6 +21,10 @@ class Settings(BaseSettings):
     supabase_jwt_secret: str = ""
     jwt_audience: str = "authenticated"
 
+    # Run import jobs inside the API process after each request (single-process hosting).
+    # Set false when a separate `python worker.py` process is running.
+    inline_jobs: bool = True
+
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
 
     @property
