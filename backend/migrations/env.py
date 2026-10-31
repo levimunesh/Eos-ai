@@ -11,6 +11,7 @@ from sqlalchemy import pool, text
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+import app.assistant.models  # noqa: F401
 import app.audit.models  # noqa: F401  (register tables)
 import app.catalog.models  # noqa: F401
 import app.ingest.models  # noqa: F401

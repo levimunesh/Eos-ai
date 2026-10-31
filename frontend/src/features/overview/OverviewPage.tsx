@@ -1,6 +1,7 @@
 import { ArrowUp, Bot, Check, Store, Upload, Users, type LucideIcon } from 'lucide-react'
+import { lazy, Suspense } from 'react'
 import { Link } from 'react-router'
-import { PageHeader } from '@/components/states'
+import { LoadingBlock, PageHeader } from '@/components/states'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import { useOrg } from '@/features/orgs/org-context'
@@ -8,6 +9,9 @@ import { useImportsQuery } from '@/features/imports/api'
 import { useBranchesQuery } from '@/lib/queries'
 import { t, type StringKey } from '@/lib/strings'
 import { cn } from '@/lib/utils'
+
+// Charts are heavy; load them only once there is data to show.
+const Dashboard = lazy(() => import('@/features/analytics/Dashboard').then((m) => ({ default: m.Dashboard })))
 
 const KPI_LABELS: StringKey[] = [
   'overview.kpis.netSales',
@@ -197,11 +201,10 @@ function AssistantPreview() {
   )
 }
 
-export function OverviewPage() {
+function EmptyOverview() {
   const { membership, isOwner } = useOrg()
   return (
     <div className="flex flex-col gap-7">
-      <PageHeader title={t('overview.title')} description={membership.org_name} />
 
       <div className="flex flex-col gap-1.5">
         <h2 className="text-base font-semibold">{t('overview.emptyTitle')}</h2>
@@ -218,6 +221,27 @@ export function OverviewPage() {
         )}
         <AssistantPreview />
       </div>
+    </div>
+  )
+}
+
+export function OverviewPage() {
+  const { membership, role } = useOrg()
+  // Managers and owners can list imports; viewers can't, so for them the KPI response decides.
+  const imports = useImportsQuery(role !== 'viewer')
+  const hasImported = role === 'viewer' || (imports.data ?? []).some((i) => i.status === 'done')
+  return (
+    <div className="flex flex-col gap-5">
+      <PageHeader title={t('overview.title')} description={membership.org_name} />
+      {role !== 'viewer' && imports.isPending ? (
+        <LoadingBlock />
+      ) : hasImported ? (
+        <Suspense fallback={<LoadingBlock />}>
+          <Dashboard empty={<EmptyOverview />} />
+        </Suspense>
+      ) : (
+        <EmptyOverview />
+      )}
     </div>
   )
 }

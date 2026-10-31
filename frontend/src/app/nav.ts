@@ -1,4 +1,4 @@
-import { Bot, Building2, FileBarChart, LayoutGrid, Store, Upload, Users, type LucideIcon } from 'lucide-react'
+import { Bot, Building2, FileBarChart, LayoutGrid, ReceiptText, Store, Upload, Users, type LucideIcon } from 'lucide-react'
 import type { StringKey } from '@/lib/strings'
 
 export interface NavItem {
@@ -13,6 +13,7 @@ export interface NavItem {
 
 export const PRIMARY_NAV: NavItem[] = [
   { to: '/', label: 'nav.overview', icon: LayoutGrid, end: true },
+  { to: '/records/sales', label: 'nav.salesRecords', icon: ReceiptText },
   { to: '/imports', label: 'nav.imports', icon: Upload, hideForViewer: true },
   { to: '/assistant', label: 'nav.assistant', icon: Bot, disabled: true },
   { to: '/reports', label: 'nav.reports', icon: FileBarChart, disabled: true },
@@ -36,6 +37,7 @@ export function visibleSettings(role: string) {
 export function crumbsFor(pathname: string): StringKey[] {
   const settings = SETTINGS_NAV.find((n) => pathname.startsWith(n.to))
   if (settings) return ['nav.settings', settings.label]
+  if (pathname.startsWith('/records/sales')) return ['nav.salesRecords']
   if (pathname.startsWith('/imports/new')) return ['nav.imports', 'imports.wizard.title']
   if (pathname.startsWith('/imports')) return ['nav.imports']
   return ['nav.overview']

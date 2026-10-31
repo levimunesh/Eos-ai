@@ -16,6 +16,7 @@ export default defineConfig({
         advancedChunks: {
           groups: [
             { name: 'supabase', test: /node_modules[\\/]@supabase/ },
+            { name: 'charts', test: /node_modules[\\/](recharts|d3-[a-z]+|victory-vendor|@reduxjs|immer|reselect|decimal\.js-light|es-toolkit)[\\/]/ },
             { name: 'react', test: /node_modules[\\/](react|react-dom|react-router|scheduler)[\\/]/ },
           ],
         },

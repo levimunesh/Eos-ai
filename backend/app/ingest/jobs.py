@@ -56,6 +56,16 @@ async def _mark_failed(import_id: UUID, org_id: UUID, message: str) -> None:
         imp.finished_at = datetime.now(UTC)
 
 
+async def refresh_stats(org_id: UUID, entity_type: str) -> None:
+    """Update planner statistics so dashboards stay fast right after a big import."""
+    try:
+        async with get_sessionmaker()() as s, s.begin():
+            await set_tenant_vars(s, user_id=None, org_id=org_id)
+            await s.execute(text("select eos.refresh_stats(:e)"), {"e": entity_type})
+    except Exception:  # statistics are an optimisation; never fail the import over them
+        log.exception("refresh_stats failed for %s", entity_type)
+
+
 async def run_job(import_id: UUID, org_id: UUID, kind: str) -> None:
     try:
         async with get_sessionmaker()() as s, s.begin():
@@ -91,6 +101,8 @@ async def run_job(import_id: UUID, org_id: UUID, kind: str) -> None:
             imp.finished_at = datetime.now(UTC)
             imp.last_error = None
         log.info("import %s %s: %s", import_id, kind, imp.status.value)
+        if kind == "commit":
+            await refresh_stats(org_id, imp.entity_type)
     except (FileReadError, PermissionError) as exc:
         await _mark_failed(import_id, org_id, str(exc))
     except Exception as exc:  # unexpected: record it, never leave the job silent

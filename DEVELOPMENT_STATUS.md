@@ -5,7 +5,8 @@ Last updated: 2026-10-30
 ## Current phase
 Phase 1 — Foundation: **complete** (owner approved 2026-10-30).
 Phase 2 — Import: **complete** (backend + screens).
-Phase 3 — KPIs + dashboard: **KPI engine and API complete**; dashboard screens next.
+Phase 3 — KPIs + dashboard: **complete** (engine, API, dashboard and records screens).
+Phase 4 — AI assistant: **backend complete**; assistant screens arrive with the UI redesign.
 
 ## Done
 - Phase 0 plan approved with changes: industry-agnostic, multicurrency, Supabase `eos` schema inside mdf-hrms, Arabic later (`docs/PHASE_0_PLAN.md`)
@@ -42,12 +43,22 @@ Phase 3 — KPIs + dashboard: **KPI engine and API complete**; dashboard screens
 - Speed on the demo year (115k lines): 0.4 s for all sales KPIs, 0.09 s for a month
 - Verified: every KPI matches the independently computed answers for the year, all 12 months, all 3 branches and all 36 branch-months; inventory value per branch at every month end; plus a hand-calculated dataset covering refunds, voids, discounts, USD and AED conversion, a currency with no rate, and missing costs
 
+## Phase 4 (backend) done
+- Assistant answers through five typed, read-only tools (KPIs, sales breakdown, expense breakdown, data coverage, branches); the model never touches SQL and branch access is enforced in code
+- Streams answers over server-sent events with live tool-call progress
+- Number verifier: every figure in an answer is checked against that turn's tool results; unverified figures are flagged in the response and stored
+- Tool results reach the model wrapped as data; prompt-injection text in imported records is delivered as data and tested
+- Conversations are private to their author (API and RLS); every request logs tokens, rounds, tools and latency; cost is recorded only when prices are configured
+- Provider interface with the Anthropic implementation and a scripted fake for tests; without an API key the assistant reports itself as not configured (503)
+- Statistics refresh after each import keeps dashboards fast (a demo-year query went from minutes to 0.4 s right after import)
+
 ## In progress
-- Dashboard screens (KPI cards, trend and breakdown charts, filters, drill-down)
+- UI redesign after owner feedback and an independent design review (see docs/UI_REVIEW.md)
 
 ## Next
-- Dashboard screens
-- Phase 4 — AI assistant
+- UI redesign: dashboard as a story, AI surfaces, denser type and tables, proper dark mode
+- Phase 4 screens: ask-or-jump palette, answer panel with sources
+- Phase 5 — daily report
 
 ## Decisions and clarifications made during Phase 1
 - Base currency cannot be changed after creation (it would silently restate every figure).
@@ -77,11 +88,13 @@ Phase 3 — KPIs + dashboard: **KPI engine and API complete**; dashboard screens
 | 0002 pin function search_path | applied | applied |
 | 0003 FK indexes | applied | applied |
 | 0004 business data and imports | applied | applied |
+| 0005 assistant tables | applied | applied |
+| 0006 refresh_stats | applied | applied |
 
 Round-trip checked locally: upgrade → downgrade to base → upgrade.
 
 ## Tests
-- Backend: 129 passing (adds KPI acceptance and browser-access tests). Was 112 passing, including full demo-company import whose loaded sales match the independently computed answers (418,364.517 OMR net, 48,475 transactions), messy-file accounting (51 rows = 1 imported + 8 rejected + 42 duplicate), replace mode, re-upload detection, branch-scoped imports and Excel/Arabic parsing. Previously: 66 passing (tenancy isolation via API and raw SQL as `eos_app`, RLS guardrail for every tenant table, auth edge cases, roles, invitations, names, demo generator determinism and independent recomputation)
+- Backend: 142 passing in under 2 minutes (adds assistant loop, verifier, privacy and usage tests; per-test timeout 240 s). Was 129 passing (adds KPI acceptance and browser-access tests). Was 112 passing, including full demo-company import whose loaded sales match the independently computed answers (418,364.517 OMR net, 48,475 transactions), messy-file accounting (51 rows = 1 imported + 8 rejected + 42 duplicate), replace mode, re-upload detection, branch-scoped imports and Excel/Arabic parsing. Previously: 66 passing (tenancy isolation via API and raw SQL as `eos_app`, RLS guardrail for every tenant table, auth edge cases, roles, invitations, names, demo generator determinism and independent recomputation)
 - Isolation tests verified to fail when RLS is removed from a table
 - Frontend: 47 passing (adds import wizard flow, polling, failure, resume, error download, viewer access). Was 31 passing (API client headers and error envelope, onboarding validation and percent conversion, empty overview shows no figures, role gating for viewer/manager/owner); lint and production build clean
 - Not yet tested: real sign-in against Supabase Auth end to end (the build environment can't reach Supabase); first run should be done by the owner

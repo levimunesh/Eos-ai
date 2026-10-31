@@ -25,6 +25,9 @@ const ImportsPage = lazy(() => import('@/features/imports/ImportsPage').then((m)
 const ImportWizardPage = lazy(() =>
   import('@/features/imports/ImportWizardPage').then((m) => ({ default: m.ImportWizardPage })),
 )
+const SalesRecordsPage = lazy(() =>
+  import('@/features/analytics/SalesRecordsPage').then((m) => ({ default: m.SalesRecordsPage })),
+)
 const BranchesPage = lazy(() => import('@/features/branches/BranchesPage').then((m) => ({ default: m.BranchesPage })))
 
 const page = (el: React.ReactNode) => <Suspense fallback={<FullPageSpinner />}>{el}</Suspense>
@@ -45,6 +48,7 @@ export function AppRoutes() {
         <Route element={<OrgGate />}>
           <Route element={<AppLayout />}>
             <Route index element={<OverviewPage />} />
+            <Route path="records/sales" element={inApp(<SalesRecordsPage />)} />
             <Route path="imports" element={inApp(<ImportsPage />)} />
             <Route path="imports/new" element={inApp(<ImportWizardPage />)} />
             <Route path="settings/organisation" element={inApp(<OrgSettingsPage />)} />

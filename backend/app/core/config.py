@@ -25,6 +25,16 @@ class Settings(BaseSettings):
     # Set false when a separate `python worker.py` process is running.
     inline_jobs: bool = True
 
+    # AI assistant (Phase 4). No key = the assistant reports itself as not configured.
+    anthropic_api_key: str = ""
+    ai_model: str = "claude-sonnet-5-5"
+    ai_max_rounds: int = 8
+    ai_max_tokens: int = 2000
+    # Optional, USD per million tokens. Left empty, cost is recorded as unknown rather
+    # than guessed; set them from the current Anthropic pricing page.
+    ai_price_input_per_mtok: float | None = None
+    ai_price_output_per_mtok: float | None = None
+
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
 
     @property

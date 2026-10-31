@@ -6,6 +6,7 @@ from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
+from app.assistant.router import router as assistant_router
 from app.catalog.router import router as catalog_router
 from app.core.config import get_settings
 from app.core.db import dispose_engine, get_sessionmaker
@@ -51,6 +52,7 @@ def create_app() -> FastAPI:
     api.include_router(catalog_router)
     api.include_router(ingest_router)
     api.include_router(kpi_router)
+    api.include_router(assistant_router)
     app.include_router(api)
     return app
 

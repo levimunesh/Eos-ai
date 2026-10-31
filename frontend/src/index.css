@@ -37,6 +37,12 @@
   --ring: rgb(58 79 224 / 0.55);
   --ring-halo: rgb(58 79 224 / 0.16);
   --skeleton: #e9ecf1;
+  /* Charts: validated categorical pair (dataviz validator, light surface #fff). */
+  --chart-1: #3a4fe0;
+  --chart-2: #14946b;
+  --chart-compare: #8a919e;
+  --chart-grid: #eceef2;
+  --chart-axis: #cdd2da;
 
   --dawn: linear-gradient(135deg, #3a4fe0 0%, #6e48dc 55%, #e0577a 100%);
   --dawn-button: linear-gradient(180deg, #4457e6 0%, #3a4fe0 55%, #3546d6 100%);
@@ -76,6 +82,11 @@
   --ring: rgb(140 154 255 / 0.7);
   --ring-halo: rgb(140 154 255 / 0.18);
   --skeleton: #222731;
+  --chart-1: #6b78f0;
+  --chart-2: #199e70;
+  --chart-compare: #6f7787;
+  --chart-grid: #20242c;
+  --chart-axis: #343a45;
 
   --dawn: linear-gradient(135deg, #5466f0 0%, #7c57e6 55%, #e8698a 100%);
   --dawn-button: linear-gradient(180deg, #5767ee 0%, #4f5fe8 55%, #4655dd 100%);
@@ -115,6 +126,9 @@
   --color-danger-soft: var(--danger-soft);
   --color-overlay: var(--overlay);
   --color-skeleton: var(--skeleton);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-compare: var(--chart-compare);
 
   --shadow-xs: var(--shadow-xs);
   --shadow-sm: var(--shadow-sm);
@@ -249,3 +263,12 @@
   100% { transform: translateX(300%); }
 }
 [dir='rtl'] .motion-safe\:animate-\[eos-indeterminate_1\.4s_ease-in-out_infinite\] { animation-direction: reverse; }
+
+/* Receipt side sheet: slides up as a bottom sheet on phones, in from the end edge on larger screens. */
+@keyframes eos-sheet-end { from { transform: translateX(100%); } to { transform: none; } }
+@keyframes eos-sheet-end-rtl { from { transform: translateX(-100%); } to { transform: none; } }
+.anim-sheet[data-state='open'] { animation: eos-sheet 240ms cubic-bezier(0.32, 0.72, 0, 1); }
+@media (min-width: 640px) {
+  .anim-sheet[data-state='open'] { animation: eos-sheet-end 220ms cubic-bezier(0.32, 0.72, 0, 1); }
+  [dir='rtl'] .anim-sheet[data-state='open'] { animation-name: eos-sheet-end-rtl; }
+}
