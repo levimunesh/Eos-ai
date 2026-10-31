@@ -307,3 +307,66 @@ async def test_demo_expenses_by_category(client, demo):
     assert (
         by_key(r.json())["operating_expenses"]["value"] == (answers["year"]["operating_expenses"])
     )
+
+
+# ---------------------------------------------------------------------------------------
+# Reports (Phase 5): the report is the dashboard's numbers in another form.
+# ---------------------------------------------------------------------------------------
+
+
+async def test_report_matches_kpis_and_exports(client, hand_org, tmp_path):
+    import io
+    import zipfile
+
+    owner, org = hand_org
+    h = owner.h(org["id"])
+    k = by_key((await client.get("/api/v1/kpis", params=PERIOD, headers=h)).json())
+    r = await client.get("/api/v1/reports/sales", params=PERIOD, headers=h)
+    assert r.status_code == 200, r.text
+    rep = r.json()
+    rk = {x["key"]: x for x in rep["kpis"]}
+    for key in ("net_sales", "transactions", "gross_profit", "operating_expenses"):
+        assert rk[key]["value"] == k[key]["value"], key
+    assert rep["trend"]["dimension"] == "day"
+    assert {row["key"] for row in rep["by_branch"]} == {"A", "B"}
+    assert any("Unit cost is missing" in n for n in rep["data_notes"])
+
+    x = await client.get(
+        "/api/v1/reports/sales/export", params={**PERIOD, "format": "xlsx"}, headers=h
+    )
+    assert x.status_code == 200
+    assert x.headers["content-disposition"].endswith('.xlsx"')
+    from openpyxl import load_workbook
+
+    wb = load_workbook(io.BytesIO(x.content), data_only=True)
+    assert wb.sheetnames == ["Summary", "By branch", "By category", "Top products", "Trend"]
+    summary = {
+        row[0]: row[1]
+        for row in wb["Summary"].iter_rows(min_row=5, values_only=True)
+        if row and row[0]
+    }
+    assert str(summary["Net sales"]) == k["net_sales"]["value"]
+    assert summary["Transactions"] == k["transactions"]["value"]
+    assert zipfile.is_zipfile(io.BytesIO(x.content))
+
+    p = await client.get(
+        "/api/v1/reports/sales/export", params={**PERIOD, "format": "pdf"}, headers=h
+    )
+    assert p.status_code == 200 and p.content.startswith(b"%PDF")
+    assert len(p.content) > 2000
+
+
+async def test_report_respects_branch_scope(client, hand_org, actor):
+    owner, org = hand_org
+    branches = {
+        b["code"]: b["id"]
+        for b in (await client.get("/api/v1/branches", headers=owner.h(org["id"]))).json()
+    }
+    r = await client.get(
+        "/api/v1/reports/sales",
+        params={**PERIOD, "branch_ids": branches["B"]},
+        headers=owner.h(org["id"]),
+    )
+    rep = r.json()
+    assert [row["key"] for row in rep["by_branch"]] == ["B"]
+    assert {x["key"]: x for x in rep["kpis"]}["net_sales"]["value"] == "6.845"

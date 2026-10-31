@@ -15,6 +15,7 @@ Read `docs/PHASE_0_PLAN.md` and `DEVELOPMENT_STATUS.md` before changing anything
   `cd backend && uv run pytest`
 - Lint: `cd backend && uv run ruff check . && uv run ruff format --check .`
 - Frontend: `cd frontend && npm install && npm run dev`
+- AI eval (live model; needs a token and the demo org id): `uv run python ../eval/run_eval.py --token ... --org ...` from backend/
 - Frontend checks: `cd frontend && npm run lint && npm test -- --run && npm run build`
 
 ## Where things live

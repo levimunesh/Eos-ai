@@ -7,6 +7,7 @@ Phase 1 — Foundation: **complete** (owner approved 2026-10-30).
 Phase 2 — Import: **complete** (backend + screens).
 Phase 3 — KPIs + dashboard: **complete** (engine, API, dashboard and records screens).
 Phase 4 — AI assistant: **backend complete**; assistant screens arrive with the UI redesign.
+Phase 5 — Reports: **backend complete** (sales report for any day or period, Excel and PDF export).
 
 ## Done
 - Phase 0 plan approved with changes: industry-agnostic, multicurrency, Supabase `eos` schema inside mdf-hrms, Arabic later (`docs/PHASE_0_PLAN.md`)
@@ -52,6 +53,15 @@ Phase 4 — AI assistant: **backend complete**; assistant screens arrive with th
 - Provider interface with the Anthropic implementation and a scripted fake for tests; without an API key the assistant reports itself as not configured (503)
 - Statistics refresh after each import keeps dashboards fast (a demo-year query went from minutes to 0.4 s right after import)
 
+## Phase 5 (backend) done
+- Sales report for a day or any period: key figures with previous period and change, data notes, by branch, by category, top products, trend; same engine as the dashboard so totals always match (tested)
+- Excel export (five sheets, real number formats) and PDF export (A4, tables, data notes, disclaimer)
+
+## AI evaluation
+- `eval/questions.yaml`: 32 questions with exact answers generated from the demo company's independently computed figures (year, months, branches, comparisons, expense categories, plus guards for no-data periods, prompt injection and currency conversion)
+- `eval/run_eval.py`: runs them against a live API with a real model, requires exact figures and zero unverified numbers, writes a results file; grader has its own unit tests
+- Not yet run against a live model (needs ANTHROPIC_API_KEY); threshold is 90% exact + all guards
+
 ## In progress
 - UI redesign after owner feedback and an independent design review (see docs/UI_REVIEW.md)
 
@@ -94,7 +104,7 @@ Phase 4 — AI assistant: **backend complete**; assistant screens arrive with th
 Round-trip checked locally: upgrade → downgrade to base → upgrade.
 
 ## Tests
-- Backend: 142 passing in under 2 minutes (adds assistant loop, verifier, privacy and usage tests; per-test timeout 240 s). Was 129 passing (adds KPI acceptance and browser-access tests). Was 112 passing, including full demo-company import whose loaded sales match the independently computed answers (418,364.517 OMR net, 48,475 transactions), messy-file accounting (51 rows = 1 imported + 8 rejected + 42 duplicate), replace mode, re-upload detection, branch-scoped imports and Excel/Arabic parsing. Previously: 66 passing (tenancy isolation via API and raw SQL as `eos_app`, RLS guardrail for every tenant table, auth edge cases, roles, invitations, names, demo generator determinism and independent recomputation)
+- Backend: 147 passing (adds reports and eval grader). Was 142 passing in under 2 minutes (adds assistant loop, verifier, privacy and usage tests; per-test timeout 240 s). Was 129 passing (adds KPI acceptance and browser-access tests). Was 112 passing, including full demo-company import whose loaded sales match the independently computed answers (418,364.517 OMR net, 48,475 transactions), messy-file accounting (51 rows = 1 imported + 8 rejected + 42 duplicate), replace mode, re-upload detection, branch-scoped imports and Excel/Arabic parsing. Previously: 66 passing (tenancy isolation via API and raw SQL as `eos_app`, RLS guardrail for every tenant table, auth edge cases, roles, invitations, names, demo generator determinism and independent recomputation)
 - Isolation tests verified to fail when RLS is removed from a table
 - Frontend: 47 passing (adds import wizard flow, polling, failure, resume, error download, viewer access). Was 31 passing (API client headers and error envelope, onboarding validation and percent conversion, empty overview shows no figures, role gating for viewer/manager/owner); lint and production build clean
 - Not yet tested: real sign-in against Supabase Auth end to end (the build environment can't reach Supabase); first run should be done by the owner

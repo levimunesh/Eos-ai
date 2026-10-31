@@ -14,6 +14,7 @@ from app.core.errors import install_error_handlers
 from app.ingest.router import router as ingest_router
 from app.kpi.router import router as kpi_router
 from app.orgs.router import router as orgs_router
+from app.reports.router import router as reports_router
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 
@@ -53,6 +54,7 @@ def create_app() -> FastAPI:
     api.include_router(ingest_router)
     api.include_router(kpi_router)
     api.include_router(assistant_router)
+    api.include_router(reports_router)
     app.include_router(api)
     return app
 
