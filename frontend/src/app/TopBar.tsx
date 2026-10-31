@@ -1,37 +1,59 @@
-import { ChevronRight, Menu, Moon, Search, Sun } from 'lucide-react'
+import { ChevronRight, Menu, Moon, PanelLeftClose, PanelLeftOpen, Sun } from 'lucide-react'
 import { useLocation } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { t } from '@/lib/strings'
 import { useTheme } from '@/lib/theme-context'
 import { isApplePlatform } from '@/lib/use-hotkey'
+import { cn } from '@/lib/utils'
 import { crumbsFor } from './nav'
 import { UserMenu } from './UserMenu'
-import { BrandMark } from './Wordmark'
+import { AiMark, BrandMark } from './Wordmark'
 
-export function TopBar({ onOpenMenu, onOpenPalette }: { onOpenMenu: () => void; onOpenPalette: () => void }) {
+export function TopBar({
+  onOpenMenu,
+  onOpenPalette,
+  collapsed,
+  onToggleCollapsed,
+}: {
+  onOpenMenu: () => void
+  onOpenPalette: () => void
+  collapsed?: boolean
+  onToggleCollapsed?: () => void
+}) {
   const { pathname } = useLocation()
   const crumbs = crumbsFor(pathname)
   const { resolved, toggle } = useTheme()
   const mod = isApplePlatform() ? '⌘' : 'Ctrl'
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-line bg-canvas/80 px-2 backdrop-blur-md sm:px-4 lg:px-6">
-      <Button variant="ghost" size="icon" className="lg:hidden" aria-label={t('nav.openMenu')} onClick={onOpenMenu}>
+    <header className="sticky top-0 z-30 flex h-11 items-center gap-1 border-b border-line bg-canvas/85 px-2 backdrop-blur-md sm:px-3 lg:px-4">
+      <Button variant="ghost" size="icon-sm" className="lg:hidden" aria-label={t('nav.openMenu')} onClick={onOpenMenu}>
         <Menu />
       </Button>
-      <BrandMark className="size-6 lg:hidden" />
+      <BrandMark className="ms-1 lg:hidden" />
+      {onToggleCollapsed && (
+        <button
+          type="button"
+          onClick={onToggleCollapsed}
+          aria-label={collapsed ? t('shell.expand') : t('shell.collapse')}
+          aria-expanded={!collapsed}
+          aria-keyshortcuts="["
+          title={`${collapsed ? t('shell.expand') : t('shell.collapse')} ([)`}
+          className="hidden size-7 items-center justify-center rounded-md text-muted hover:bg-surface-2 hover:text-fg lg:flex"
+        >
+          {collapsed ? <PanelLeftOpen aria-hidden className="size-4 rtl:-scale-x-100" /> : <PanelLeftClose aria-hidden className="size-4 rtl:-scale-x-100" />}
+        </button>
+      )}
 
-      <nav aria-label={t('shell.breadcrumbs')} className="ms-1 min-w-0 flex-1 lg:ms-0">
-        <ol className="flex items-center gap-1.5 text-sm">
+      {/* Breadcrumb only when the page sits inside a section; the page itself carries its title. */}
+      <nav aria-label={t('shell.breadcrumbs')} className={cn('ms-1 min-w-0 flex-1', crumbs.length < 2 && 'invisible')}>
+        <ol className="flex items-center gap-1 text-body">
           {crumbs.map((key, i) => {
             const last = i === crumbs.length - 1
             return (
-              <li key={key} className="flex min-w-0 items-center gap-1.5">
-                {i > 0 && <ChevronRight aria-hidden className="hidden size-3.5 shrink-0 text-muted/70 sm:block rtl:-scale-x-100" />}
-                <span
-                  aria-current={last ? 'page' : undefined}
-                  className={last ? 'truncate font-medium text-fg' : 'hidden truncate text-muted sm:inline'}
-                >
+              <li key={key} className="flex min-w-0 items-center gap-1">
+                {i > 0 && <ChevronRight aria-hidden className="size-3 shrink-0 text-muted/70 rtl:-scale-x-100" />}
+                <span aria-current={last ? 'page' : undefined} className={last ? 'truncate text-fg' : 'truncate text-muted'}>
                   {t(key)}
                 </span>
               </li>
@@ -45,20 +67,18 @@ export function TopBar({ onOpenMenu, onOpenPalette }: { onOpenMenu: () => void; 
         onClick={onOpenPalette}
         aria-label={t('shell.search')}
         aria-keyshortcuts="Meta+K Control+K"
-        className="focus-field hidden h-9 w-64 items-center gap-2 rounded-md border border-line bg-surface px-3 text-sm text-muted shadow-xs transition-colors hover:border-line-strong hover:text-fg-2 md:flex"
+        className="focus-field hidden h-8 w-72 items-center gap-2 rounded-md border border-line bg-surface px-2.5 text-body text-muted transition-colors hover:border-line-strong hover:text-fg-2 md:flex"
       >
-        <Search aria-hidden className="size-4" />
-        <span className="flex-1 text-start">{t('shell.search')}</span>
-        <kbd className="rounded border border-line bg-subtle px-1.5 font-sans text-2xs font-medium text-muted">
-          {mod} K
-        </kbd>
+        <AiMark />
+        <span className="flex-1 truncate text-start">{t('shell.search')}</span>
+        <kbd className="mono rounded-sm border border-line px-1 text-[0.6875rem] leading-4 text-muted">{mod} K</kbd>
       </button>
-      <Button variant="ghost" size="icon" className="md:hidden" aria-label={t('shell.search')} onClick={onOpenPalette}>
-        <Search />
+      <Button variant="ghost" size="icon-sm" className="md:hidden" aria-label={t('shell.search')} onClick={onOpenPalette}>
+        <AiMark />
       </Button>
       <Button
         variant="ghost"
-        size="icon"
+        size="icon-sm"
         aria-label={resolved === 'dark' ? t('theme.switchToLight') : t('theme.switchToDark')}
         onClick={toggle}
       >

@@ -131,6 +131,31 @@ describe('filters in the URL', () => {
       expect(urls.at(-1)).toContain('compare=none')
     })
   })
+
+  it('writes the segmented quick picks to the URL and marks the active one', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    const { fetchImpl } = renderWithOrg(
+      <>
+        <Dashboard empty={<p>empty</p>} />
+        <Location />
+      </>,
+      { role: 'owner', routes: routes(), path: '/?period=this_month' },
+    )
+    await screen.findByTestId('kpi-net_sales')
+    const group = screen.getByRole('radiogroup', { name: 'Period' })
+    expect(within(group).getByRole('button', { name: /^Period: This month/ })).toHaveAttribute('aria-pressed', 'true')
+    await user.click(within(group).getByRole('radio', { name: 'Last 30 days' }))
+    expect(screen.getByTestId('loc')).toHaveTextContent('period=last_30_days')
+    expect(within(group).getByRole('radio', { name: 'Last 30 days' })).toHaveAttribute('aria-checked', 'true')
+    expect(within(group).getByRole('button', { name: /^Period: Last 30 days/ })).toHaveAttribute('aria-pressed', 'false')
+    await waitFor(() => {
+      const urls = fetchImpl.mock.calls.map(([u]) => String(u)).filter((u) => u.includes('/kpis?'))
+      expect(urls.at(-1)).toContain('from=2025-02-19')
+      expect(urls.at(-1)).toContain('to=2025-03-20')
+    })
+    // The branch chip and the insights endpoint follow the same range.
+    await waitFor(() => expect(fetchImpl.mock.calls.map(([u]) => String(u)).some((u) => u.includes('/insights?') && u.includes('from=2025-02-19'))).toBe(true))
+  })
 })
 
 describe('dashboard states', () => {

@@ -1,8 +1,8 @@
 import { useId } from 'react'
 
 /**
- * Abstract dawn: concentric horizon arcs rising over a fine grid, drawn in SVG so it scales,
- * themes and costs no network request. Purely decorative.
+ * First light: a warm horizon rising into a pale sky, concentric arcs over a fine grid, drawn
+ * in SVG so it scales, themes and costs no network request. Purely decorative.
  *
  * Gradient ids are unique per instance: the phone band and the desktop panel both render this,
  * and a duplicate id would resolve to the hidden copy and paint nothing.
@@ -11,6 +11,7 @@ export function BrandArt({ anchor = 'center' }: { anchor?: 'center' | 'horizon' 
   const uid = useId().replace(/:/g, '')
   const id = (name: string) => `${name}-${uid}`
   const arcs = [70, 120, 170, 220, 270, 320, 370]
+  const H = 640
   return (
     <svg
       aria-hidden
@@ -21,29 +22,29 @@ export function BrandArt({ anchor = 'center' }: { anchor?: 'center' | 'horizon' 
     >
       <defs>
         <linearGradient id={id('sky')} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#0b0d1f" />
-          <stop offset="0.55" stopColor="#1b1d4a" />
-          <stop offset="0.82" stopColor="#4a2f78" />
-          <stop offset="1" stopColor="#8a3d6e" />
+          <stop offset="0" stopColor="#d9dcf0" />
+          <stop offset="0.45" stopColor="#ece3ee" />
+          <stop offset="0.72" stopColor="#f6d3c2" />
+          <stop offset="0.8" stopColor="#f5b98f" />
         </linearGradient>
         <radialGradient id={id('sun')} cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0" stopColor="#ffd0a8" stopOpacity="1" />
-          <stop offset="0.12" stopColor="#ff9a7a" stopOpacity="0.9" />
-          <stop offset="0.32" stopColor="#e0577a" stopOpacity="0.6" />
-          <stop offset="0.62" stopColor="#6e48dc" stopOpacity="0.28" />
-          <stop offset="1" stopColor="#3a4fe0" stopOpacity="0" />
+          <stop offset="0" stopColor="#fff1dc" stopOpacity="1" />
+          <stop offset="0.14" stopColor="#f9c48f" stopOpacity="0.95" />
+          <stop offset="0.34" stopColor="#f5a05a" stopOpacity="0.55" />
+          <stop offset="0.6" stopColor="#e0577a" stopOpacity="0.18" />
+          <stop offset="1" stopColor="#7a5af0" stopOpacity="0" />
         </radialGradient>
         <linearGradient id={id('ground')} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#120f2c" stopOpacity="0.55" />
-          <stop offset="1" stopColor="#07081a" stopOpacity="0.95" />
+          <stop offset="0" stopColor="#2b2238" />
+          <stop offset="1" stopColor="#15121c" />
         </linearGradient>
         <linearGradient id={id('arc')} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#8f9cff" stopOpacity="0" />
-          <stop offset="0.5" stopColor="#c9cfff" stopOpacity="0.55" />
-          <stop offset="1" stopColor="#ff9fb5" stopOpacity="0" />
+          <stop offset="0" stopColor="#7a5af0" stopOpacity="0" />
+          <stop offset="0.5" stopColor="#e0577a" stopOpacity="0.55" />
+          <stop offset="1" stopColor="#f5a05a" stopOpacity="0" />
         </linearGradient>
         <pattern id={id('grid')} width="32" height="32" patternUnits="userSpaceOnUse">
-          <path d="M32 0H0V32" fill="none" stroke="#ffffff" strokeOpacity="0.05" />
+          <path d="M32 0H0V32" fill="none" stroke="#2b2238" strokeOpacity="0.08" />
         </pattern>
         <linearGradient id={id('grid-fade')} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#fff" stopOpacity="0" />
@@ -55,21 +56,14 @@ export function BrandArt({ anchor = 'center' }: { anchor?: 'center' | 'horizon' 
       </defs>
       <rect width="600" height="800" fill={`url(#${id('sky')})`} />
       <rect width="600" height="800" fill={`url(#${id('grid')})`} mask={`url(#${id('grid-mask')})`} />
-      {/* Glow centred on the horizon so the dawn rises above the line. */}
-      <ellipse cx="300" cy="640" rx="460" ry="360" fill={`url(#${id('sun')})`} />
+      {/* Glow centred on the horizon so the light rises above the line. */}
+      <ellipse cx="300" cy={H} rx="460" ry="340" fill={`url(#${id('sun')})`} />
       {arcs.map((r, i) => (
-        <path
-          key={r}
-          d={`M ${300 - r} 640 A ${r} ${r} 0 0 1 ${300 + r} 640`}
-          fill="none"
-          stroke={`url(#${id('arc')})`}
-          strokeWidth={i === 2 ? 1.6 : 1}
-          strokeOpacity={1 - i * 0.11}
-        />
+        <path key={r} d={`M ${300 - r} ${H} A ${r} ${r} 0 0 1 ${300 + r} ${H}`} fill="none" stroke={`url(#${id('arc')})`} strokeWidth={i === 2 ? 1.6 : 1} strokeOpacity={1 - i * 0.11} />
       ))}
-      <path d="M 0 640 H 600" stroke="#ffffff" strokeOpacity="0.35" />
-      <rect y="640" width="600" height="160" fill={`url(#${id('ground')})`} />
-      <circle cx="300" cy="640" r="3" fill="#fff" />
+      <rect y={H} width="600" height={800 - H} fill={`url(#${id('ground')})`} />
+      <path d={`M 0 ${H} H 600`} stroke="#ffd9b8" strokeOpacity="0.9" />
+      <circle cx="300" cy={H} r="3.5" fill="#fff4e6" />
     </svg>
   )
 }

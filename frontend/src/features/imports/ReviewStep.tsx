@@ -21,13 +21,13 @@ function Stat({
   detail?: React.ReactNode
 }) {
   return (
-    <div className="surface-raised flex flex-col gap-1.5 rounded-xl p-4">
-      <dt className="flex items-center gap-2 text-[0.8125rem] font-medium text-fg-2">
+    <div className="flex flex-col gap-0.5 border-s border-line ps-3 first:border-s-0 first:ps-0">
+      <dt className="flex items-center gap-1.5 text-body text-fg-2">
         {tone !== 'default' && (
           <span
             aria-hidden
             className={cn(
-              'size-2 rounded-full',
+              'size-1.5 rounded-full',
               tone === 'success' && 'bg-success',
               tone === 'danger' && 'bg-danger',
               tone === 'warning' && 'bg-warning',
@@ -37,8 +37,8 @@ function Stat({
         {label}
       </dt>
       <dd className="flex flex-col gap-0.5">
-        <span className="text-2xl font-semibold tracking-tight tabular-nums">{count(value)}</span>
-        {detail && <span className="text-xs text-muted">{detail}</span>}
+        <span className="num text-kpi text-fg">{count(value)}</span>
+        {detail && <span className="text-caption text-muted">{detail}</span>}
       </dd>
     </div>
   )
@@ -46,7 +46,7 @@ function Stat({
 
 export function ReportStats({ report }: { report: QualityReport }) {
   return (
-    <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <dl className="grid grid-cols-2 gap-x-3 gap-y-4 sm:grid-cols-4">
       <Stat
         label={t('imports.review.totalRows')}
         value={report.rows_total}
@@ -80,14 +80,14 @@ function ErrorsByCode({ report }: { report: QualityReport }) {
   return (
     <ul className="flex flex-col gap-2.5">
       {entries.map(([code, n]) => (
-        <li key={code} className="grid grid-cols-[minmax(0,10rem)_1fr_auto] items-center gap-3 text-sm sm:grid-cols-[minmax(0,13rem)_1fr_auto]">
+        <li key={code} className="grid grid-cols-[minmax(0,10rem)_1fr_auto] items-center gap-3 text-body sm:grid-cols-[minmax(0,13rem)_1fr_auto]">
           <span className="truncate text-fg-2" title={code}>
             {errorCodeLabel(code)}
           </span>
-          <span aria-hidden className="h-2 overflow-hidden rounded-full bg-subtle">
-            <span className="block h-full rounded-full bg-danger/70" style={{ width: `${(n / max) * 100}%` }} />
+          <span aria-hidden className="h-1.5 overflow-hidden bg-surface-2">
+            <span className="block h-full bg-danger/60" style={{ width: `${(n / max) * 100}%` }} />
           </span>
-          <span className="text-end font-medium tabular-nums">{count(n)}</span>
+          <span className="num text-end text-fg">{count(n)}</span>
         </li>
       ))}
     </ul>
@@ -120,14 +120,14 @@ function Totals({ report }: { report: QualityReport }) {
         <dl className="grid gap-x-6 gap-y-2 sm:grid-cols-2">
           {rows.map(([label, value]) => (
             <div key={label} className="flex items-baseline justify-between gap-3 border-b border-line py-1.5 sm:block sm:border-0 sm:py-0">
-              <dt className="text-xs text-muted">{label}</dt>
-              <dd className="text-sm font-medium tabular-nums">{value}</dd>
+              <dt className="text-caption text-muted">{label}</dt>
+              <dd className="num text-body text-fg">{value}</dd>
             </div>
           ))}
         </dl>
       )}
       {branches.length > 0 && (
-        <div className="overflow-hidden rounded-lg border border-line">
+        <div>
           <Table aria-label={t('imports.review.byBranch')}>
             <TableHeader>
               <TableRow>
@@ -140,10 +140,10 @@ function Totals({ report }: { report: QualityReport }) {
             <TableBody>
               {branches.map(([code, b]) => (
                 <TableRow key={code}>
-                  <TableCell className="font-medium tabular-nums">{code}</TableCell>
-                  <TableCell className="text-end tabular-nums">{count(b.receipts)}</TableCell>
-                  <TableCell className="hidden text-end tabular-nums sm:table-cell">{count(b.lines)}</TableCell>
-                  <TableCell className="text-end whitespace-nowrap tabular-nums">
+                  <TableCell className="mono">{code}</TableCell>
+                  <TableCell className="num text-end">{count(b.receipts)}</TableCell>
+                  <TableCell className="num hidden text-end sm:table-cell">{count(b.lines)}</TableCell>
+                  <TableCell className="num text-end whitespace-nowrap">
                     {Object.entries(b.net_by_currency).map(([c, v]) => (
                       <span key={c} className="block">
                         <span className="text-muted">{c}</span> {money(v)}
@@ -157,11 +157,11 @@ function Totals({ report }: { report: QualityReport }) {
         </div>
       )}
       {categories.length > 0 && (
-        <dl className="flex flex-col divide-y divide-line rounded-lg border border-line">
+        <dl className="flex flex-col divide-y divide-line border-t border-line">
           {categories.map(([cat, v]) => (
-            <div key={cat} className="flex items-center justify-between gap-3 px-4 py-2 text-sm">
+            <div key={cat} className="flex h-8 items-center justify-between gap-3 px-3 text-body">
               <dt className="truncate text-fg-2">{cat}</dt>
-              <dd className="font-medium tabular-nums">{money(v)}</dd>
+              <dd className="num text-fg">{money(v)}</dd>
             </div>
           ))}
         </dl>
@@ -172,9 +172,9 @@ function Totals({ report }: { report: QualityReport }) {
 
 function Section({ title, children, actions }: { title: string; children: React.ReactNode; actions?: React.ReactNode }) {
   return (
-    <section className="flex flex-col gap-3">
+    <section className="flex flex-col gap-3 border-t border-line pt-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-[0.9375rem] font-semibold">{title}</h2>
+        <h2 className="text-title">{title}</h2>
         {actions}
       </div>
       {children}
@@ -193,15 +193,15 @@ export function ReviewStep({ record, onEditMapping }: { record: ImportRecord; on
   const existing = report.duplicates.already_in_eos + report.replaced_records
 
   return (
-    <div className="flex flex-col gap-7">
+    <div className="flex flex-col gap-5">
       <ReportStats report={report} />
 
       {report.warnings.length > 0 && (
         <Section title={t('imports.review.warningsHeading')}>
           <ul className="flex flex-col gap-2">
             {report.warnings.map((w) => (
-              <li key={w} className="flex items-start gap-2.5 rounded-lg border border-warning/30 bg-warning-soft px-3.5 py-2.5 text-sm text-warning">
-                <Info aria-hidden className="mt-0.5 size-4 shrink-0" />
+              <li key={w} className="flex items-start gap-2 text-body text-fg-2">
+                <Info aria-hidden className="mt-0.5 size-3.5 shrink-0 text-warning" />
                 {w}
               </li>
             ))}
@@ -231,7 +231,7 @@ export function ReviewStep({ record, onEditMapping }: { record: ImportRecord; on
             {report.errors_sample.length > 0 && (
               <div className="flex flex-col gap-2">
                 <p className="text-xs text-muted">{t('imports.review.sampleCaption', { n: report.errors_sample.length })}</p>
-                <div className="overflow-hidden rounded-lg border border-line">
+                <div>
                   <Table aria-label={t('imports.review.sampleHeading')}>
                     <TableHeader>
                       <TableRow>
@@ -243,12 +243,12 @@ export function ReviewStep({ record, onEditMapping }: { record: ImportRecord; on
                     <TableBody>
                       {report.errors_sample.map((e, i) => (
                         <TableRow key={`${e.row}-${e.code}-${i}`}>
-                          <TableCell className="text-end align-top tabular-nums">{e.row}</TableCell>
-                          <TableCell className="hidden align-top text-fg-2 sm:table-cell">{e.column ?? '–'}</TableCell>
+                          <TableCell className="mono text-end align-top">{e.row}</TableCell>
+                          <TableCell className="mono hidden align-top text-fg-2 sm:table-cell">{e.column ?? '–'}</TableCell>
                           <TableCell className="align-top">
-                            <span className="block text-xs font-medium text-danger-text">{errorCodeLabel(e.code)}</span>
+                            <span className="block text-caption font-medium text-danger-text">{errorCodeLabel(e.code)}</span>
                             <span className="block text-fg-2">{e.message}</span>
-                            {e.column && <span className="block text-xs text-muted sm:hidden">{e.column}</span>}
+                            {e.column && <span className="mono block text-muted sm:hidden">{e.column}</span>}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -260,8 +260,8 @@ export function ReviewStep({ record, onEditMapping }: { record: ImportRecord; on
             <InlineError error={download.error} />
           </>
         ) : (
-          <p className="flex items-center gap-2 text-sm text-success">
-            <CircleCheck aria-hidden className="size-4" />
+          <p className="flex items-center gap-2 text-body text-success">
+            <CircleCheck aria-hidden className="size-3.5" />
             {t('imports.review.errorsEmpty')}
           </p>
         )}
@@ -272,13 +272,13 @@ export function ReviewStep({ record, onEditMapping }: { record: ImportRecord; on
       </Section>
 
       {existing > 0 && !nothingValid && (
-        <fieldset className="flex flex-col gap-2">
-          <legend className="mb-2 text-[0.9375rem] font-semibold">{t('imports.review.conflictHeading')}</legend>
+        <fieldset className="flex flex-col gap-2 border-t border-line pt-4">
+          <legend className="float-start mb-2 text-title">{t('imports.review.conflictHeading')}</legend>
           {(['skip', 'replace'] as const).map((m) => (
             <label
               key={m}
               className={cn(
-                'flex min-h-11 cursor-pointer items-start gap-3 rounded-lg border px-3.5 py-3 transition-colors has-[:focus-visible]:shadow-[0_0_0_3px_var(--ring-halo)]',
+                'flex min-h-10 cursor-pointer items-start gap-3 rounded-md border px-3 py-2.5 transition-colors has-[:focus-visible]:shadow-[0_0_0_3px_var(--ring-halo)]',
                 mode === m ? 'border-accent bg-accent-soft' : 'border-line hover:bg-subtle',
               )}
             >
@@ -291,8 +291,8 @@ export function ReviewStep({ record, onEditMapping }: { record: ImportRecord; on
                 className="mt-1 accent-[var(--accent)] focus-visible:outline-none"
               />
               <span className="flex flex-col">
-                <span className="text-sm font-medium">{m === 'skip' ? t('imports.review.skipLabel') : t('imports.review.replaceLabel')}</span>
-                <span className="text-xs text-muted">{m === 'skip' ? t('imports.review.skipBody') : t('imports.review.replaceBody')}</span>
+                <span className="text-body font-medium">{m === 'skip' ? t('imports.review.skipLabel') : t('imports.review.replaceLabel')}</span>
+                <span className="text-caption text-muted">{m === 'skip' ? t('imports.review.skipBody') : t('imports.review.replaceBody')}</span>
               </span>
             </label>
           ))}
@@ -303,7 +303,7 @@ export function ReviewStep({ record, onEditMapping }: { record: ImportRecord; on
       )}
 
       {nothingValid && (
-        <p role="alert" className="flex items-start gap-2 rounded-lg bg-danger-soft px-3.5 py-2.5 text-sm text-danger-text">
+        <p role="alert" className="flex items-start gap-2 rounded-md bg-danger-soft px-3 py-2 text-body text-danger-text">
           <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
           {t('imports.review.nothingValid')}
         </p>
@@ -311,7 +311,7 @@ export function ReviewStep({ record, onEditMapping }: { record: ImportRecord; on
 
       <InlineError error={commit.error ?? validate.error} />
 
-      <div className="flex flex-col-reverse gap-2 border-t border-line pt-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col-reverse gap-2 border-t border-line pt-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button variant="ghost" onClick={onEditMapping}>
             <Pencil aria-hidden />

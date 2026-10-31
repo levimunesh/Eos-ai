@@ -9,6 +9,7 @@ import { Select } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useBranchesQuery, useOrgQuery } from '@/lib/queries'
 import { t } from '@/lib/strings'
+import { cn } from '@/lib/utils'
 import { useSalesRecords } from './api'
 import { FilterBar } from './FilterBar'
 import { useFilters } from './filters'
@@ -69,7 +70,7 @@ export function SalesRecordsPage() {
   const last = Math.min(total, (page + 1) * PAGE)
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
       <PageHeader title={t('records.title')} description={t('records.description')} />
       <FilterBar
         filters={filters}
@@ -85,7 +86,7 @@ export function SalesRecordsPage() {
           aria-label={t('records.status')}
           value={status}
           onChange={(e) => set({ status: e.target.value || null, page: null })}
-          className="w-auto min-w-36"
+          className="h-9 w-auto min-w-32 sm:h-7"
         >
           <option value="">{t('records.allStatuses')}</option>
           {STATUSES.map((s) => (
@@ -94,15 +95,15 @@ export function SalesRecordsPage() {
             </option>
           ))}
         </Select>
-        <div className="relative min-w-0 flex-1 sm:max-w-64">
-          <Search aria-hidden className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted" />
+        <div className="relative min-w-40 flex-1 sm:max-w-60">
+          <Search aria-hidden className="pointer-events-none absolute start-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted" />
           <Input
             type="search"
             aria-label={t('records.search')}
             placeholder={t('records.search')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="ps-9"
+            className="mono h-9 ps-8 sm:h-7"
           />
         </div>
       </FilterBar>
@@ -124,7 +125,7 @@ export function SalesRecordsPage() {
                   <TableHead className="hidden md:table-cell">{t('records.colBranch')}</TableHead>
                   <TableHead>{t('records.colStatus')}</TableHead>
                   <TableHead className="hidden text-end md:table-cell">{t('records.colLines')}</TableHead>
-                  <TableHead className="text-end">{t('records.colNet')}</TableHead>
+                  <TableHead className="text-end">{t('records.colNetCcy', { ccy: org.data?.base_currency ?? '' })}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -138,31 +139,28 @@ export function SalesRecordsPage() {
                           e.stopPropagation()
                           set({ sale: r.id })
                         }}
-                        className="font-medium tabular-nums hover:underline"
+                        className="mono text-fg hover:underline"
                       >
                         {r.receipt_no}
                       </button>
-                      <span className="block text-xs text-muted tabular-nums sm:hidden">
+                      <span className="mono block text-muted sm:hidden">
                         {formatSaleTime(r.sold_at, tz)}, {r.branch_code}
                       </span>
-                      {r.ref_receipt_no && <span className="block text-xs text-muted">{t('records.refundOf', { receipt: r.ref_receipt_no })}</span>}
+                      {r.ref_receipt_no && <span className="block text-caption text-muted">{t('records.refundOf', { receipt: r.ref_receipt_no })}</span>}
                     </TableCell>
-                    <TableCell className="hidden whitespace-nowrap text-fg-2 tabular-nums sm:table-cell">{formatSaleTime(r.sold_at, tz)}</TableCell>
-                    <TableCell className="hidden font-medium tabular-nums md:table-cell">{r.branch_code}</TableCell>
+                    <TableCell className="mono hidden whitespace-nowrap text-fg-2 sm:table-cell">{formatSaleTime(r.sold_at, tz)}</TableCell>
+                    <TableCell className="mono hidden md:table-cell">{r.branch_code}</TableCell>
                     <TableCell>
                       <SaleStatusPill status={r.status} />
                     </TableCell>
-                    <TableCell className="hidden text-end text-fg-2 tabular-nums md:table-cell">{formatCount(r.lines)}</TableCell>
-                    <TableCell className="text-end whitespace-nowrap tabular-nums">
-                      <span className="me-1 text-xs text-muted">{r.currency}</span>
-                      <span className="font-medium">{formatDecimal(r.net, decimals)}</span>
-                    </TableCell>
+                    <TableCell className="num hidden text-end text-fg-2 md:table-cell">{formatCount(r.lines)}</TableCell>
+                    <TableCell className={cn('num text-end whitespace-nowrap', Number(r.net) < 0 && 'text-danger-text')}>{formatDecimal(r.net, decimals)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
-            <nav aria-label={t('records.tableLabel')} className="flex items-center justify-between gap-3 border-t border-line px-4 py-2.5">
-              <p className="text-xs text-muted tabular-nums">
+            <nav aria-label={t('records.tableLabel')} className="flex h-10 items-center justify-between gap-3 border-t border-line px-3">
+              <p className="mono text-muted">
                 {t('records.showing', { from: formatCount(first), to: formatCount(last), total: formatCount(total) })}
               </p>
               <div className="flex gap-1">

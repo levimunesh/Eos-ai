@@ -24,7 +24,7 @@ export function OnboardingPage() {
       <header className="flex h-14 items-center justify-between border-b border-line px-4 sm:px-6">
         <Wordmark />
         {hasOrgs ? (
-          <Link to="/" className="inline-flex min-h-11 items-center gap-1.5 text-sm text-accent-text hover:underline">
+          <Link to="/" className="inline-flex min-h-10 items-center gap-1.5 text-body text-accent-text hover:underline">
             <ArrowLeft aria-hidden className="size-4 rtl:-scale-x-100" />
             {t('onboarding.backToApp')}
           </Link>
@@ -37,8 +37,8 @@ export function OnboardingPage() {
       </header>
       <main className="mx-auto w-full max-w-lg px-4 py-8 sm:py-14">
         <h1 className="text-2xl font-semibold tracking-tight">{t('onboarding.title')}</h1>
-        <p className="mt-2 mb-8 text-sm text-muted">{t('onboarding.intro')}</p>
-        <div className="surface-raised rounded-xl p-5 sm:p-7">
+        <p className="mt-2 mb-8 text-body text-muted">{t('onboarding.intro')}</p>
+        <div className="surface-raised rounded-lg p-5 sm:p-7">
           <OnboardingForm
             initialStep={initialStep}
             error={createOrg.error}

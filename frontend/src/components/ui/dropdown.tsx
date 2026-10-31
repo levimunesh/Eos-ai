@@ -16,7 +16,7 @@ export const DropdownContent = forwardRef<
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        'anim-menu z-50 min-w-56 overflow-hidden rounded-lg border border-line bg-elevated p-1 text-fg shadow-lg',
+        'anim-menu elev-raised z-50 min-w-52 overflow-hidden rounded-lg p-1 text-body text-fg',
         className,
       )}
       {...props}
@@ -26,7 +26,7 @@ export const DropdownContent = forwardRef<
 DropdownContent.displayName = 'DropdownContent'
 
 const itemClass =
-  'relative flex min-h-11 cursor-pointer select-none items-center gap-2 rounded-md px-2 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[highlighted]:bg-subtle sm:min-h-8 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted'
+  'relative flex min-h-10 cursor-pointer select-none items-center gap-2 rounded-md px-2 text-body outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[highlighted]:bg-surface-2 sm:min-h-7 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted'
 
 export const DropdownItem = forwardRef<ElementRef<typeof Menu.Item>, ComponentPropsWithoutRef<typeof Menu.Item>>(
   ({ className, ...props }, ref) => <Menu.Item ref={ref} className={cn(itemClass, className)} {...props} />,

@@ -20,9 +20,9 @@ const STEP_OF: Record<WizardView, number> = { file: 0, map: 1, checking: 1, revi
 
 function FileBadge({ record, entity }: { record: ImportRecord; entity?: EntityType }) {
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-line bg-subtle/60 px-3.5 py-2.5 text-sm">
-      <span className="min-w-0 truncate font-medium">{record.file_name}</span>
-      <span className="text-xs text-muted tabular-nums">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-line pb-3 text-body">
+      <span className="mono min-w-0 truncate text-fg">{record.file_name}</span>
+      <span className="text-caption text-muted">
         {entity?.label ?? record.entity_type}, {fileSize(record.file_size)}
       </span>
       <span className="ms-auto">
@@ -36,16 +36,14 @@ function DoneState({ record }: { record: ImportRecord }) {
   const { membership } = useOrg()
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col items-center gap-3 px-4 pt-4 pb-2 text-center">
-        <span className="flex size-12 items-center justify-center rounded-full bg-success-soft text-success">
-          <CircleCheck aria-hidden className="size-6" />
+      <div className="flex max-w-[60ch] flex-col items-start gap-1.5">
+        <span className="flex items-center gap-2 text-success">
+          <CircleCheck aria-hidden className="size-4" />
+          <h2 className="text-[0.9375rem] font-semibold text-fg">{t('imports.review.doneTitle')}</h2>
         </span>
-        <h2 className="text-lg font-semibold">{t('imports.review.doneTitle')}</h2>
-        <p className="max-w-md text-sm text-muted">
-          {t('imports.review.doneBody', { file: record.file_name, org: membership.org_name })}
-        </p>
+        <p className="text-body text-muted">{t('imports.review.doneBody', { file: record.file_name, org: membership.org_name })}</p>
       </div>
-      <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <dl className="grid grid-cols-2 gap-x-6 gap-y-3 border-t border-line pt-4 sm:grid-cols-4">
         {(
           [
             ['imports.review.totalRows', record.rows_total],
@@ -54,13 +52,13 @@ function DoneState({ record }: { record: ImportRecord }) {
             ['imports.review.duplicates', record.rows_duplicate],
           ] as const
         ).map(([key, n]) => (
-          <div key={key} className="surface-raised flex flex-col gap-1 rounded-xl p-4">
-            <dt className="text-[0.8125rem] font-medium text-fg-2">{t(key)}</dt>
-            <dd className="text-2xl font-semibold tracking-tight tabular-nums">{count(n)}</dd>
+          <div key={key} className="flex flex-col gap-0.5">
+            <dt className="text-body text-fg-2">{t(key)}</dt>
+            <dd className="num text-kpi text-fg">{count(n)}</dd>
           </div>
         ))}
       </dl>
-      <div className="flex flex-col gap-2 border-t border-line pt-5 sm:flex-row sm:justify-end">
+      <div className="flex flex-col gap-2 border-t border-line pt-4 sm:flex-row sm:justify-end">
         <Link to="/imports" className={buttonVariants({ variant: 'secondary' })}>
           {t('imports.review.viewHistory')}
         </Link>
@@ -76,21 +74,17 @@ function FailedState({ record, onEdit }: { record: ImportRecord; onEdit: () => v
   const validate = useValidateImport()
   return (
     <div className="flex flex-col gap-6">
-      <div role="alert" className="flex items-start gap-3 rounded-xl border border-danger/30 bg-danger-soft p-4">
-        <CircleX aria-hidden className="mt-0.5 size-5 shrink-0 text-danger-text" />
+      <div role="alert" className="flex items-start gap-3 rounded-lg bg-danger-soft px-4 py-3">
+        <CircleX aria-hidden className="mt-0.5 size-4 shrink-0 text-danger-text" />
         <div className="flex min-w-0 flex-col gap-1">
-          <h2 className="text-sm font-semibold text-danger-text">{t('imports.review.failedTitle')}</h2>
-          <p className="text-sm text-fg-2">{t('imports.review.failedBody')}</p>
-          {record.last_error && (
-            <p className="mt-1 rounded-md bg-surface/70 px-2.5 py-1.5 text-sm break-words text-fg ring-1 ring-line ring-inset">
-              {record.last_error}
-            </p>
-          )}
+          <h2 className="text-body font-semibold text-danger-text">{t('imports.review.failedTitle')}</h2>
+          <p className="text-body text-fg-2">{t('imports.review.failedBody')}</p>
+          {record.last_error && <p className="mono mt-1 break-words text-fg">{record.last_error}</p>}
         </div>
       </div>
       {record.quality_report && <ReportStats report={record.quality_report} />}
       <InlineError error={validate.error} />
-      <div className="flex flex-col-reverse gap-2 border-t border-line pt-5 sm:flex-row sm:justify-end">
+      <div className="flex flex-col-reverse gap-2 border-t border-line pt-4 sm:flex-row sm:justify-end">
         <Button variant="ghost" onClick={onEdit}>
           <Pencil aria-hidden />
           {t('imports.review.editMapping')}
@@ -178,20 +172,17 @@ function Wizard() {
   else body = <FailedState record={record} onEdit={() => setEditing(true)} />
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
-      <Link to="/imports" className="inline-flex min-h-11 items-center gap-1.5 self-start text-sm text-muted hover:text-fg sm:min-h-0">
-        <ArrowLeft aria-hidden className="size-4 rtl:-scale-x-100" />
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
+      <Link to="/imports" className="inline-flex min-h-9 items-center gap-1 self-start text-body text-muted hover:text-fg sm:min-h-0">
+        <ArrowLeft aria-hidden className="size-3.5 rtl:-scale-x-100" />
         {t('imports.wizard.back')}
       </Link>
-      <PageHeader title={t('imports.wizard.title')} />
-      <div className="surface-raised flex flex-col gap-6 rounded-xl p-5 sm:p-7">
-        <div className="flex flex-col gap-5">
-          <WizardStepsHeader step={step} title={t(titles[step][0])} body={t(titles[step][1])} />
-          {record && <FileBadge record={record} entity={entity} />}
-        </div>
-        <div key={view} className="anim-page">
-          {body}
-        </div>
+      <div className="flex flex-col gap-4">
+        <WizardStepsHeader step={step} title={t(titles[step][0])} body={t(titles[step][1])} />
+        {record && <FileBadge record={record} entity={entity} />}
+      </div>
+      <div key={view} className="anim-page">
+        {body}
       </div>
     </div>
   )
@@ -202,9 +193,9 @@ function WizardStepsHeader({ step, title, body }: { step: number; title: string;
   return (
     <>
       <WizardSteps step={step} />
-      <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
-        <p className="text-sm text-muted">{body}</p>
+      <div className="flex flex-col gap-0.5">
+        <h1 className="text-h1">{title}</h1>
+        <p className="text-body text-muted">{body}</p>
       </div>
     </>
   )

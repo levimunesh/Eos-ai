@@ -8,27 +8,27 @@ export const Dialog = DialogPrimitive.Root
 export const DialogTrigger = DialogPrimitive.Trigger
 export const DialogClose = DialogPrimitive.Close
 
-/** Bottom sheet on phones, centred panel from the `sm` breakpoint. */
+/** Bottom sheet on phones; a 480px floating panel from the `sm` breakpoint. */
 export const DialogContent = forwardRef<
   ElementRef<typeof DialogPrimitive.Content>,
   ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & { hideClose?: boolean }
 >(({ className, children, hideClose, ...props }, ref) => (
   <DialogPrimitive.Portal>
-    <DialogPrimitive.Overlay className="anim-overlay fixed inset-0 z-50 bg-overlay backdrop-blur-[2px]" />
+    <DialogPrimitive.Overlay className="anim-overlay fixed inset-0 z-50 bg-overlay" />
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        'anim-dialog fixed inset-x-0 bottom-0 z-50 flex max-h-[92dvh] flex-col overflow-hidden rounded-t-2xl border border-line bg-elevated pb-[env(safe-area-inset-bottom)] shadow-lg focus:outline-none',
-        'sm:inset-x-4 sm:top-[10vh] sm:bottom-auto sm:mx-auto sm:max-h-[80vh] sm:max-w-lg sm:rounded-xl sm:pb-0',
+        'anim-dialog elev-floating fixed inset-x-0 bottom-0 z-50 flex max-h-[92dvh] flex-col overflow-hidden rounded-t-xl pb-[env(safe-area-inset-bottom)] focus:outline-none',
+        'sm:inset-x-4 sm:top-[12vh] sm:bottom-auto sm:mx-auto sm:max-h-[80vh] sm:w-[30rem] sm:max-w-[calc(100vw-2rem)] sm:rounded-xl sm:pb-0',
         className,
       )}
       {...props}
     >
-      <div aria-hidden className="mx-auto mt-2 h-1 w-10 shrink-0 rounded-full bg-line-strong sm:hidden" />
+      <div aria-hidden className="mx-auto mt-2 h-1 w-8 shrink-0 rounded-full bg-line-strong sm:hidden" />
       {children}
       {!hideClose && (
         <DialogPrimitive.Close
-          className="absolute end-2 top-3 flex size-11 items-center justify-center rounded-md text-muted hover:bg-subtle hover:text-fg sm:end-3 sm:size-8"
+          className="absolute end-3 top-3 flex size-9 items-center justify-center rounded-md text-muted hover:bg-surface-2 hover:text-fg sm:size-7"
           aria-label={t('common.close')}
         >
           <X className="size-4" />
@@ -40,7 +40,7 @@ export const DialogContent = forwardRef<
 DialogContent.displayName = 'DialogContent'
 
 export function DialogHeader({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('flex flex-col gap-1 px-5 pt-4 pe-14 pb-3 sm:pt-5', className)} {...props} />
+  return <div className={cn('flex flex-col gap-1 px-5 pt-4 pe-12 pb-2 sm:pt-5', className)} {...props} />
 }
 
 export function DialogBody({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
@@ -49,10 +49,7 @@ export function DialogBody({ className, ...props }: HTMLAttributes<HTMLDivElemen
 
 export function DialogFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div
-      className={cn('flex flex-col-reverse gap-2 px-5 pt-3 pb-5 sm:flex-row sm:justify-end', className)}
-      {...props}
-    />
+    <div className={cn('flex flex-col-reverse gap-2 px-5 pt-3 pb-5 sm:flex-row sm:justify-end', className)} {...props} />
   )
 }
 
@@ -60,7 +57,7 @@ export const DialogTitle = forwardRef<
   ElementRef<typeof DialogPrimitive.Title>,
   ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
 >(({ className, ...props }, ref) => (
-  <DialogPrimitive.Title ref={ref} className={cn('text-base font-semibold tracking-tight text-fg', className)} {...props} />
+  <DialogPrimitive.Title ref={ref} className={cn('text-[0.9375rem] leading-5 font-semibold tracking-tight text-fg', className)} {...props} />
 ))
 DialogTitle.displayName = 'DialogTitle'
 
@@ -68,6 +65,6 @@ export const DialogDescription = forwardRef<
   ElementRef<typeof DialogPrimitive.Description>,
   ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
 >(({ className, ...props }, ref) => (
-  <DialogPrimitive.Description ref={ref} className={cn('text-sm text-muted', className)} {...props} />
+  <DialogPrimitive.Description ref={ref} className={cn('text-body text-muted', className)} {...props} />
 ))
 DialogDescription.displayName = 'DialogDescription'

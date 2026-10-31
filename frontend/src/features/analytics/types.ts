@@ -118,3 +118,30 @@ export const UP_IS_BAD: KpiKey[] = ['returns', 'discounts', 'operating_expenses'
 
 /** Cards that can open the sales drill-down. */
 export const SALES_KPIS: KpiKey[] = ['gross_sales', 'discounts', 'returns', 'net_sales', 'transactions', 'avg_ticket', 'cogs', 'gross_profit']
+
+export type InsightKind =
+  | 'headline_change'
+  | 'margin_pressure'
+  | 'unusual_day'
+  | 'branch_lagging'
+  | 'missing_costs'
+  | 'missing_fx'
+  | 'no_data'
+
+export type InsightSeverity = 'warning' | 'notice' | 'info'
+
+/** One computed statement from GET /insights. Every number in `text` exists in `figures`. */
+export interface Insight {
+  kind: InsightKind | string
+  severity: InsightSeverity
+  text: string
+  figures: Record<string, string | number>
+  evidence: Record<string, unknown>
+}
+
+export interface InsightsResponse {
+  period: Period
+  previous_period?: Period
+  currency?: string
+  insights: Insight[]
+}

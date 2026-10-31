@@ -68,16 +68,16 @@ function SettingsForm({ org, canEdit }: { org: Org; canEdit: boolean }) {
             <div
               id="baseCurrency"
               aria-describedby="baseCurrency-note"
-              className="flex h-11 items-center gap-2 rounded-md border border-line bg-subtle px-3 text-sm sm:h-9"
+              className="flex h-10 items-center gap-2 rounded-md border border-line bg-surface-2 px-3 text-body sm:h-9"
             >
               <Lock aria-hidden className="size-3.5 text-muted" />
               <span className="font-medium">{org.base_currency}</span>
               <span className="truncate text-muted">{currencyName(org.base_currency)}</span>
-              <span className="ms-auto text-xs whitespace-nowrap text-muted">
+              <span className="ms-auto text-caption whitespace-nowrap text-muted">
                 {t('org.decimals', { count: org.currency_decimals })}
               </span>
             </div>
-            <p id="baseCurrency-note" className="text-xs text-muted">
+            <p id="baseCurrency-note" className="text-caption text-muted">
               {t('org.currencyFixed')}
             </p>
           </div>
@@ -95,7 +95,7 @@ function SettingsForm({ org, canEdit }: { org: Org; canEdit: boolean }) {
         {canEdit && (
           <CardFooter>
             {update.isSuccess && !isDirty && (
-              <span role="status" className="me-auto flex items-center gap-1.5 text-sm text-success">
+              <span role="status" className="me-auto flex items-center gap-1.5 text-body text-success">
                 <CircleCheck aria-hidden className="size-4" />
                 {t('common.saved')}
               </span>
@@ -123,7 +123,7 @@ export function OrgSettingsPage() {
         description={t('org.description')}
         actions={!isOwner ? <Badge tone="outline">{t('common.readOnly')}</Badge> : undefined}
       />
-      {!isOwner && <p className="-mt-3 text-sm text-muted">{t('org.ownerOnly')}</p>}
+      {!isOwner && <p className="-mt-2 text-body text-muted">{t('org.ownerOnly')}</p>}
       {org.isPending ? (
         <Card>
           <LoadingBlock />

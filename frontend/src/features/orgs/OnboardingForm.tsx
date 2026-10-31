@@ -35,7 +35,7 @@ const STEPS: { title: StringKey; body: StringKey; fields: (keyof OnboardingValue
 function Stepper({ step }: { step: number }) {
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-xs font-medium text-muted tabular-nums">
+      <p className="text-caption font-medium text-muted tabular-nums">
         {t('common.stepOf', { step: step + 1, total: STEPS.length })}
       </p>
       <ol aria-label={t('onboarding.progress')} className="grid grid-cols-3 gap-2">
@@ -48,7 +48,7 @@ function Stepper({ step }: { step: number }) {
                 i <= step ? 'bg-[image:var(--dawn)]' : 'bg-line',
               )}
             />
-            <span className={cn('flex items-center gap-1.5 text-xs', i === step ? 'font-medium text-fg' : 'text-muted')}>
+            <span className={cn('flex items-center gap-1.5 text-caption', i === step ? 'font-medium text-fg' : 'text-muted')}>
               {i < step && <Check aria-hidden className="size-3 text-success" strokeWidth={3} />}
               <span className="truncate">{t(s.title)}</span>
             </span>
@@ -115,7 +115,7 @@ export function OnboardingForm({ onSubmit, error, initialStep = 0 }: Props) {
       <div key={step} className="anim-page flex flex-col gap-5">
         <div className="flex flex-col gap-1">
           <h2 className="text-lg font-semibold tracking-tight">{t(STEPS[step].title)}</h2>
-          <p className="text-sm text-muted">{t(STEPS[step].body)}</p>
+          <p className="text-body text-muted">{t(STEPS[step].body)}</p>
         </div>
 
         {step === 0 && (
@@ -153,7 +153,7 @@ export function OnboardingForm({ onSubmit, error, initialStep = 0 }: Props) {
                   )}
                 />
               </Field>
-              <p id="baseCurrency-lock" className="flex items-start gap-1.5 rounded-md bg-warning-soft px-2.5 py-2 text-xs text-warning">
+              <p id="baseCurrency-lock" className="flex items-start gap-1.5 rounded-md bg-warning-soft px-2.5 py-2 text-caption text-warning">
                 <Lock aria-hidden className="mt-px size-3 shrink-0" />
                 {t('onboarding.currencyHint')}
               </p>

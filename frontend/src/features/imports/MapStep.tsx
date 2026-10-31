@@ -48,9 +48,9 @@ export function CheckingState({ title, body }: { title: string; body: string }) 
       </span>
       <div className="flex max-w-sm flex-col gap-1">
         <h2 className="text-base font-semibold">{title}</h2>
-        <p className="text-sm text-muted">{body}</p>
+        <p className="text-body text-muted">{body}</p>
       </div>
-      <div aria-hidden className="h-1 w-48 overflow-hidden rounded-full bg-subtle">
+      <div aria-hidden className="h-1 w-48 overflow-hidden rounded-full bg-surface-2">
         <div className="h-full w-1/3 rounded-full bg-[image:var(--dawn)] motion-safe:animate-[eos-indeterminate_1.4s_ease-in-out_infinite]" />
       </div>
     </div>
@@ -117,8 +117,8 @@ export function MapStep({ record, entity }: { record: ImportRecord; entity: Enti
         <div role="alert" className="flex items-start gap-3 rounded-lg border border-warning/30 bg-warning-soft p-4 text-warning">
           <AlertTriangle aria-hidden className="mt-0.5 size-4 shrink-0" />
           <div className="flex flex-col gap-0.5">
-            <p className="text-sm font-semibold">{t('imports.map.sameFileTitle')}</p>
-            <p className="text-sm">
+            <p className="text-body font-semibold">{t('imports.map.sameFileTitle')}</p>
+            <p className="text-body">
               {t('imports.map.sameFileBody', {
                 date: formatDate(prior[0].created_at, org.data?.date_format, org.data?.timezone),
                 status: t(`imports.status.${prior[0].status}`),
@@ -129,14 +129,14 @@ export function MapStep({ record, entity }: { record: ImportRecord; entity: Enti
       )}
 
       {saved && (
-        <p className="flex items-start gap-2 rounded-lg bg-accent-soft px-3.5 py-2.5 text-sm text-accent-text">
+        <p className="flex items-start gap-2 rounded-lg bg-accent-soft px-3.5 py-2.5 text-body text-accent-text">
           <History aria-hidden className="mt-0.5 size-4 shrink-0" />
           {t('imports.map.savedMappingBody')}
         </p>
       )}
 
-      <section aria-labelledby="map-fields" className="overflow-hidden rounded-xl border border-line">
-        <div className="hidden grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-4 border-b border-line bg-subtle/80 px-4 py-2.5 text-xs font-medium text-muted sm:grid">
+      <section aria-labelledby="map-fields" className="overflow-hidden rounded-lg border border-line">
+        <div className="hidden grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-4 border-b border-line bg-surface-2/80 px-4 py-2.5 text-caption font-medium text-muted sm:grid">
           <span id="map-fields">{t('imports.map.fieldsHeading')}</span>
           <span>{t('imports.map.columnHeading')}</span>
         </div>
@@ -155,11 +155,11 @@ export function MapStep({ record, entity }: { record: ImportRecord; entity: Enti
                 className="grid gap-2 border-b border-line px-4 py-3 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:items-center sm:gap-4"
               >
                 <div className="min-w-0">
-                  <label htmlFor={selectId} className="flex flex-wrap items-center gap-2 text-sm font-medium">
+                  <label htmlFor={selectId} className="flex flex-wrap items-center gap-2 text-body font-medium">
                     {f.label}
                     {f.required && <Badge tone="outline">{t('imports.map.required')}</Badge>}
                   </label>
-                  {f.help && <p className="mt-0.5 text-xs text-muted">{f.help}</p>}
+                  {f.help && <p className="mt-0.5 text-caption text-muted">{f.help}</p>}
                 </div>
                 <div className="flex min-w-0 flex-col gap-1.5">
                   <Select
@@ -200,7 +200,7 @@ export function MapStep({ record, entity }: { record: ImportRecord; entity: Enti
               ))}
             </Select>
             {preview.date_format_hint && preview.date_format_hint !== dateFormat && (
-              <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-warning">
+              <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-caption text-warning">
                 <Lightbulb aria-hidden className="size-3.5" />
                 {t('imports.map.dateHint', { format: preview.date_format_hint })}
                 <button
@@ -252,15 +252,15 @@ export function MapStep({ record, entity }: { record: ImportRecord; entity: Enti
           <h2 id="map-preview" className="text-[0.9375rem] font-semibold">
             {t('imports.map.previewHeading')}
           </h2>
-          <p className="text-xs text-muted tabular-nums">
+          <p className="text-caption text-muted tabular-nums">
             {t('imports.map.previewCaption', { shown: preview.rows.length, total: count(preview.row_count) })}
           </p>
         </div>
-        <div className="max-h-80 overflow-auto rounded-xl border border-line" tabIndex={0} aria-label={t('imports.map.previewHeading')}>
-          <table className="w-max min-w-full border-separate border-spacing-0 text-xs">
+        <div className="max-h-80 overflow-auto rounded-lg border border-line" tabIndex={0} aria-label={t('imports.map.previewHeading')}>
+          <table className="w-max min-w-full border-separate border-spacing-0 text-caption">
             <thead className="sticky top-0 z-10">
               <tr>
-                <th className="sticky start-0 z-20 border-b border-line bg-subtle px-3 py-2 text-end font-medium text-muted tabular-nums">#</th>
+                <th className="sticky start-0 z-20 border-b border-line bg-surface-2 px-3 py-2 text-end font-medium text-muted tabular-nums">#</th>
                 {headers.map((h) => {
                   const on = mapped.has(h)
                   return (
@@ -269,7 +269,7 @@ export function MapStep({ record, entity }: { record: ImportRecord; entity: Enti
                       scope="col"
                       className={cn(
                         'border-b border-line px-3 py-2 text-start align-bottom font-medium whitespace-nowrap',
-                        on ? 'bg-accent-soft text-accent-text' : 'bg-subtle text-muted',
+                        on ? 'bg-accent-soft text-accent-text' : 'bg-surface-2 text-muted',
                       )}
                     >
                       <span className="block">{h}</span>
@@ -304,14 +304,14 @@ export function MapStep({ record, entity }: { record: ImportRecord; entity: Enti
       </section>
 
       {attempted && missing.length > 0 && (
-        <p role="alert" className="rounded-lg bg-danger-soft px-3.5 py-2.5 text-sm text-danger-text">
+        <p role="alert" className="rounded-lg bg-danger-soft px-3.5 py-2.5 text-body text-danger-text">
           {t('imports.map.missingRequired', { fields: missing.map((f) => f.label).join(', ') })}
         </p>
       )}
       <InlineError error={serverError} />
 
       <div className="flex flex-col-reverse gap-2 border-t border-line pt-5 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs text-muted tabular-nums">
+        <p className="text-caption text-muted tabular-nums">
           {t('imports.map.fileInfo', { rows: count(preview.row_count), cols: headers.length })}
         </p>
         <Button onClick={() => void check()} disabled={busy} className="w-full sm:w-auto sm:min-w-40">

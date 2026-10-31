@@ -4,6 +4,9 @@ export type Preset =
   | 'today'
   | 'yesterday'
   | 'last_7_days'
+  | 'last_30_days'
+  | 'last_90_days'
+  | 'last_12_months'
   | 'this_month'
   | 'last_month'
   | 'this_quarter'
@@ -11,10 +14,16 @@ export type Preset =
   | 'last_year'
   | 'custom'
 
+/** The segmented control's quick picks, in order. Everything else lives under "Custom". */
+export const SEGMENTS: Exclude<Preset, 'custom'>[] = ['last_7_days', 'last_30_days', 'last_90_days', 'last_12_months']
+
 export const PRESETS: Exclude<Preset, 'custom'>[] = [
   'today',
   'yesterday',
   'last_7_days',
+  'last_30_days',
+  'last_90_days',
+  'last_12_months',
   'this_month',
   'last_month',
   'this_quarter',
@@ -84,6 +93,16 @@ export function presetRange(preset: Exclude<Preset, 'custom'>, today: string): {
     }
     case 'last_7_days':
       return { from: addDays(today, -6), to: today }
+    case 'last_30_days':
+      return { from: addDays(today, -29), to: today }
+    case 'last_90_days':
+      return { from: addDays(today, -89), to: today }
+    case 'last_12_months': {
+      // Twelve whole months ending today: the 1st of the month eleven months back.
+      const sm = m - 11
+      const sy = sm < 1 ? y - 1 : y
+      return { from: iso(sy, sm < 1 ? sm + 12 : sm, 1), to: today }
+    }
     case 'this_month':
       return { from: iso(y, m, 1), to: today }
     case 'last_month': {

@@ -23,16 +23,16 @@ export function OrgSwitcher({ compact = false }: { compact?: boolean }) {
       <DropdownTrigger
         aria-label={t('nav.switchOrg')}
         className={cn(
-          'flex w-full items-center gap-2.5 rounded-lg border border-line bg-surface p-1.5 text-start shadow-xs transition-colors hover:bg-subtle data-[state=open]:bg-subtle',
-          compact && 'justify-center border-transparent bg-transparent shadow-none',
+          'flex h-9 w-full items-center gap-2 rounded-md px-2 text-start transition-colors hover:bg-surface-2 data-[state=open]:bg-surface-2',
+          compact && 'justify-center px-0',
         )}
       >
-        <Avatar name={membership.org_name} seed={membership.org_id} className="size-7 rounded-md" />
+        <Avatar name={membership.org_name} seed={membership.org_id} className="size-5 rounded-[5px] text-[0.5625rem]" />
         {!compact && (
           <>
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm leading-tight font-medium">{membership.org_name}</span>
-              <span className="block text-xs leading-tight text-muted">
+              <span className="block truncate text-body leading-tight font-medium">{membership.org_name}</span>
+              <span className="block text-caption leading-tight text-muted">
                 {t(`roles.${membership.role}`)}
                 {membership.is_demo && ` (${t('nav.demo')})`}
               </span>

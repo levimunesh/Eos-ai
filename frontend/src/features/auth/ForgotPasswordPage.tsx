@@ -36,12 +36,12 @@ export function ForgotPasswordPage() {
       }
     >
       {sentTo ? (
-        <p role="status" className="surface-raised rounded-lg p-4 text-sm text-fg-2">
+        <p role="status" className="surface-raised rounded-lg p-4 text-body text-fg-2">
           {t('auth.forgotSent', { email: sentTo })}
         </p>
       ) : (
         <form noValidate onSubmit={onSubmit} className="flex flex-col gap-4">
-          <p className="text-sm text-muted">{t('auth.forgotBody')}</p>
+          <p className="text-body text-muted">{t('auth.forgotBody')}</p>
           <Field id="email" label={t('auth.email')} error={errors.email?.message}>
             <Input
               id="email"
@@ -53,7 +53,7 @@ export function ForgotPasswordPage() {
             />
           </Field>
           {error && (
-            <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-sm text-danger-text">
+            <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-body text-danger-text">
               {error}
             </p>
           )}

@@ -10,10 +10,13 @@ export interface ChartTable {
   rows: (string | number)[][]
 }
 
-/** Frame for every chart: title, optional controls, loading skeleton, empty state, table view. */
+/**
+ * Frame for every chart: a 14px title that links to the records, a muted scope ("by month"),
+ * an inline legend, and a table view. No footer: the title is the link.
+ */
 export function ChartCard({
   title,
-  subtitle,
+  scope,
   controls,
   legend,
   loading,
@@ -23,12 +26,13 @@ export function ChartCard({
   recordsHref,
   table,
   summary,
-  height = 260,
+  height = 280,
   children,
   className,
+  bleed = true,
 }: {
   title: string
-  subtitle?: string
+  scope?: string
   controls?: ReactNode
   legend?: ReactNode
   loading: boolean
@@ -41,19 +45,28 @@ export function ChartCard({
   height?: number
   children: ReactNode
   className?: string
+  /** Charts bleed to 12px from the edges; tables sit flush. */
+  bleed?: boolean
 }) {
   const [asTable, setAsTable] = useState(false)
   const titleId = `chart-${title.replace(/\W+/g, '-').toLowerCase()}`
   return (
-    <section aria-labelledby={titleId} className={cn('surface-raised flex min-w-0 flex-col rounded-xl', className)}>
-      <header className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2 px-4 pt-4 sm:px-5">
-        <div className="min-w-0">
-          <h2 id={titleId} className="text-[0.9375rem] font-semibold">
-            {title}
+    <section aria-labelledby={titleId} className={cn('card-flat flex min-w-0 flex-col', className)}>
+      <header className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 px-4 pt-3.5 pb-2">
+        <div className="flex min-w-0 items-baseline gap-2">
+          <h2 id={titleId} className="text-title text-fg">
+            {recordsHref ? (
+              <Link to={recordsHref} className="rounded-sm hover:underline">
+                {title}
+              </Link>
+            ) : (
+              title
+            )}
           </h2>
-          {subtitle && <p className="text-xs text-muted">{subtitle}</p>}
+          {scope && <span className="text-caption text-muted">{scope}</span>}
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
+          {legend && !empty && !loading && legend}
           {controls}
           {table && !empty && !loading && (
             <button
@@ -62,36 +75,34 @@ export function ChartCard({
               aria-label={asTable ? t('dashboard.charts.showChart') : t('dashboard.charts.showTable')}
               title={asTable ? t('dashboard.charts.showChart') : t('dashboard.charts.showTable')}
               onClick={() => setAsTable((v) => !v)}
-              className="flex size-11 items-center justify-center rounded-md text-muted hover:bg-subtle hover:text-fg sm:size-8"
+              className="flex size-8 items-center justify-center rounded-md text-muted hover:bg-surface-2 hover:text-fg sm:size-6"
             >
-              {asTable ? <BarChart3 aria-hidden className="size-4" /> : <Table2 aria-hidden className="size-4" />}
+              {asTable ? <BarChart3 aria-hidden className="size-3.5" /> : <Table2 aria-hidden className="size-3.5" />}
             </button>
           )}
         </div>
       </header>
-      {legend && !empty && !loading && <div className="px-4 pt-2 sm:px-5">{legend}</div>}
-      <div className="flex-1 px-2 pt-3 pb-2 sm:px-3" style={{ minHeight: height }}>
+      <div className={cn('flex-1', bleed ? 'px-3 pb-3' : 'pb-1')} style={{ minHeight: height }}>
         {error ? (
           <ErrorBlock error={error} onRetry={onRetry} />
         ) : loading ? (
           <div role="status" aria-label={t('common.loading')} className="flex h-full flex-col justify-end gap-2 px-2 pb-2" style={{ height }}>
             {[0.55, 0.8, 0.4, 0.7, 0.9, 0.6].map((w, i) => (
-              <div key={i} className="h-3 animate-pulse rounded bg-skeleton motion-reduce:animate-none" style={{ width: `${w * 100}%` }} />
+              <div key={i} className="h-2 animate-pulse rounded-sm bg-skeleton motion-reduce:animate-none" style={{ width: `${w * 100}%` }} />
             ))}
           </div>
         ) : empty ? (
-          <div className="flex flex-col items-center justify-center gap-2 text-center text-sm text-muted" style={{ height }}>
-            <BarChart3 aria-hidden className="size-5" />
+          <div className="flex h-full flex-col justify-end px-2 pb-3 text-body text-muted" style={{ minHeight: Math.min(height, 120) }}>
             {t('dashboard.charts.empty')}
           </div>
         ) : asTable && table ? (
-          <div className="overflow-auto px-2" style={{ maxHeight: height + 40 }}>
-            <table className="w-full text-sm">
+          <div className="overflow-auto px-1" style={{ maxHeight: height + 40 }}>
+            <table className="w-full text-body">
               <caption className="sr-only">{t('dashboard.charts.tableCaption', { title })}</caption>
               <thead>
                 <tr>
                   {table.columns.map((c, i) => (
-                    <th key={c} scope="col" className={cn('border-b border-line py-2 text-xs font-medium text-muted', i ? 'text-end' : 'text-start')}>
+                    <th key={c} scope="col" className={cn('border-b border-line py-1.5 text-caption font-medium text-muted', i ? 'text-end' : 'text-start')}>
                       {c}
                     </th>
                   ))}
@@ -101,7 +112,7 @@ export function ChartCard({
                 {table.rows.map((r, ri) => (
                   <tr key={ri}>
                     {r.map((cell, ci) => (
-                      <td key={ci} className={cn('border-b border-line py-1.5 tabular-nums', ci ? 'text-end' : 'text-start')}>
+                      <td key={ci} className={cn('h-8 border-b border-line py-1', ci ? 'num text-end' : 'text-start')}>
                         {cell}
                       </td>
                     ))}
@@ -116,29 +127,16 @@ export function ChartCard({
           </figure>
         )}
       </div>
-      {recordsHref && (
-        <footer className="flex justify-end border-t border-line px-4 py-2 sm:px-5">
-          <Link to={recordsHref} className="inline-flex min-h-11 items-center text-sm font-medium text-accent-text hover:underline sm:min-h-0">
-            {t('dashboard.openRecords')}
-          </Link>
-        </footer>
-      )}
     </section>
   )
 }
 
-export function LegendKey({ items }: { items: { label: string; color: string; dashed?: boolean }[] }) {
+export function LegendKey({ items }: { items: { label: string; color: string }[] }) {
   return (
-    <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-fg-2">
+    <ul className="flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-fg-2">
       {items.map((i) => (
         <li key={i.label} className="flex items-center gap-1.5">
-          <svg aria-hidden width="16" height="8" className="shrink-0">
-            {i.dashed ? (
-              <line x1="0" y1="4" x2="16" y2="4" stroke={i.color} strokeWidth="2" strokeDasharray="4 3" />
-            ) : (
-              <rect x="0" y="1" width="16" height="6" rx="3" fill={i.color} />
-            )}
-          </svg>
+          <span aria-hidden className="inline-block size-2 rounded-[2px]" style={{ background: i.color }} />
           {i.label}
         </li>
       ))}
@@ -147,19 +145,9 @@ export function LegendKey({ items }: { items: { label: string; color: string; da
 }
 
 /** A small two-option toggle used in chart headers. */
-export function Segmented<T extends string>({
-  value,
-  options,
-  onChange,
-  label,
-}: {
-  value: T
-  options: { value: T; label: string }[]
-  onChange: (v: T) => void
-  label: string
-}) {
+export function Segmented<T extends string>({ value, options, onChange, label }: { value: T; options: { value: T; label: string }[]; onChange: (v: T) => void; label: string }) {
   return (
-    <div role="radiogroup" aria-label={label} className="inline-flex rounded-md bg-subtle p-0.5 ring-1 ring-line ring-inset">
+    <div role="radiogroup" aria-label={label} className="inline-flex h-7 rounded-md border border-line bg-surface p-0.5 sm:h-6">
       {options.map((o) => (
         <button
           key={o.value}
@@ -167,10 +155,7 @@ export function Segmented<T extends string>({
           role="radio"
           aria-checked={value === o.value}
           onClick={() => onChange(o.value)}
-          className={cn(
-            'min-h-9 rounded-[5px] px-2.5 text-xs font-medium transition-colors sm:min-h-7',
-            value === o.value ? 'bg-surface text-fg shadow-xs' : 'text-muted hover:text-fg',
-          )}
+          className={cn('rounded-[4px] px-2 text-[0.75rem] font-medium transition-colors', value === o.value ? 'bg-surface-2 text-fg' : 'text-muted hover:text-fg')}
         >
           {o.label}
         </button>

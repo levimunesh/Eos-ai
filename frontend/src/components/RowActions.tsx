@@ -16,7 +16,7 @@ export function RowActionsMenu({ label, actions }: { label: string; actions: Row
     <DropdownMenu>
       <DropdownTrigger
         aria-label={label}
-        className="inline-flex size-11 items-center justify-center rounded-md text-muted hover:bg-subtle hover:text-fg sm:hidden"
+        className="inline-flex size-11 items-center justify-center rounded-md text-muted hover:bg-surface-2 hover:text-fg sm:hidden"
       >
         <MoreHorizontal className="size-4" />
       </DropdownTrigger>

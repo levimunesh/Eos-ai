@@ -10,5 +10,9 @@ export const qk = {
   breakdown: (orgId: string, params: string) => ['org', orgId, 'breakdown', params] as const,
   salesRecords: (orgId: string, params: string) => ['org', orgId, 'sales', params] as const,
   saleDetail: (orgId: string, id: string) => ['org', orgId, 'sale', id] as const,
+  insights: (orgId: string, params: string) => ['org', orgId, 'insights', params] as const,
+  assistantStatus: (orgId: string) => ['org', orgId, 'assistant', 'status'] as const,
+  conversations: (orgId: string) => ['org', orgId, 'assistant', 'conversations'] as const,
+  conversation: (orgId: string, id: string) => ['org', orgId, 'assistant', 'conversation', id] as const,
   importEntities: (orgId: string) => ['org', orgId, 'import-entities'] as const,
 }

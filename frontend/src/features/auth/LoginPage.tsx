@@ -45,7 +45,7 @@ export function LoginPage() {
       }
     >
       {params.get('expired') && (
-        <p role="status" className="mb-4 rounded-md bg-warning-soft px-3 py-2 text-sm text-warning">
+        <p role="status" className="mb-4 rounded-md bg-warning-soft px-3 py-2 text-body text-warning">
           {t('auth.sessionExpired')}
         </p>
       )}
@@ -71,12 +71,12 @@ export function LoginPage() {
           />
         </Field>
         <div className="-mt-1 flex justify-end">
-          <Link to="/forgot-password" className="text-sm text-accent-text hover:underline">
+          <Link to="/forgot-password" className="text-body text-accent-text hover:underline">
             {t('auth.forgotLink')}
           </Link>
         </div>
         {error && (
-          <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-sm text-danger-text">
+          <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-body text-danger-text">
             {error}
           </p>
         )}

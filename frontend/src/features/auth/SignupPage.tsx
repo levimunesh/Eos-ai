@@ -55,7 +55,7 @@ export function SignupPage() {
       <AuthLayout title={t('auth.checkEmailTitle')} footer={signInLink}>
         <div className="flex items-start gap-3 surface-raised rounded-lg p-4">
           <MailCheck aria-hidden className="mt-0.5 size-5 shrink-0 text-success" />
-          <p className="text-sm text-fg-2">{t('auth.checkEmailBody', { email: sentTo })}</p>
+          <p className="text-body text-fg-2">{t('auth.checkEmailBody', { email: sentTo })}</p>
         </div>
       </AuthLayout>
     )
@@ -101,7 +101,7 @@ export function SignupPage() {
           />
         </Field>
         {error && (
-          <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-sm text-danger-text">
+          <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-body text-danger-text">
             {error}
           </p>
         )}

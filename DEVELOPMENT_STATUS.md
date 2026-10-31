@@ -6,7 +6,7 @@ Last updated: 2026-10-30
 Phase 1 — Foundation: **complete** (owner approved 2026-10-30).
 Phase 2 — Import: **complete** (backend + screens).
 Phase 3 — KPIs + dashboard: **complete** (engine, API, dashboard and records screens).
-Phase 4 — AI assistant: **backend complete**; assistant screens arrive with the UI redesign.
+Phase 4 — AI assistant: **complete** (backend + Ask EOS panel and ask-or-jump palette).
 Phase 5 — Reports: **backend complete** (sales report for any day or period, Excel and PDF export).
 
 ## Done
@@ -66,13 +66,22 @@ Phase 5 — Reports: **backend complete** (sales report for any day or period, E
 - `eval/run_eval.py`: runs them against a live API with a real model, requires exact figures and zero unverified numbers, writes a results file; grader has its own unit tests
 - Not yet run against a live model (needs ANTHROPIC_API_KEY); threshold is 90% exact + all guards
 
+## UI redesign done (from docs/UI_REVIEW.md)
+- New token system: warm neutral light theme, layered dark theme (not inverted), accent reserved for interaction, dawn gradient reserved for AI surfaces; three elevation levels; AA contrast verified by a test
+- Type: Geist + Geist Mono for identifiers, display numbers at 40px, 13px body
+- Shell: 224/56px sidebar with groups and a live import badge, 44px top bar with "Ask or jump to…"
+- Dashboard as a story: filter strip (7D/30D/90D/12M/custom, previous-period chip, branches), insight strip from /insights with checkable number chips, hero net sales with trend and comparison, "What changed" column, secondary KPI strip with sparklines, "Needs attention" from computed insights, branch/category/product tables with bars behind the numbers
+- Ask EOS: right-docked answer panel streaming the assistant with lookup progress, verified ✓ or an amber list of unchecked figures, sources, history; palette free text routes to Ask EOS; calm not-configured state
+- Imports, members, branches, settings, records and auth restyled on the same system; brand art recoloured to a real dawn
+
 ## In progress
-- UI redesign after owner feedback and an independent design review (see docs/UI_REVIEW.md)
+- Nothing
 
 ## Next
-- UI redesign: dashboard as a story, AI surfaces, denser type and tables, proper dark mode
-- Phase 4 screens: ask-or-jump palette, answer panel with sources
-- Phase 5 — daily report
+- Owner review of the redesign and the assistant
+- Reports screen (backend exports exist; a Reports page with download buttons is a small addition)
+- Run the AI eval against a live model once ANTHROPIC_API_KEY is set
+- Deploy a pilot (backend host + frontend host), set CORS_ORIGINS and the Supabase redirect URL
 
 ## Decisions and clarifications made during Phase 1
 - Base currency cannot be changed after creation (it would silently restate every figure).
@@ -110,7 +119,7 @@ Round-trip checked locally: upgrade → downgrade to base → upgrade.
 ## Tests
 - Backend: 150 passing (adds insights). Was 147 passing (adds reports and eval grader). Was 142 passing in under 2 minutes (adds assistant loop, verifier, privacy and usage tests; per-test timeout 240 s). Was 129 passing (adds KPI acceptance and browser-access tests). Was 112 passing, including full demo-company import whose loaded sales match the independently computed answers (418,364.517 OMR net, 48,475 transactions), messy-file accounting (51 rows = 1 imported + 8 rejected + 42 duplicate), replace mode, re-upload detection, branch-scoped imports and Excel/Arabic parsing. Previously: 66 passing (tenancy isolation via API and raw SQL as `eos_app`, RLS guardrail for every tenant table, auth edge cases, roles, invitations, names, demo generator determinism and independent recomputation)
 - Isolation tests verified to fail when RLS is removed from a table
-- Frontend: 47 passing (adds import wizard flow, polling, failure, resume, error download, viewer access). Was 31 passing (API client headers and error envelope, onboarding validation and percent conversion, empty overview shows no figures, role gating for viewer/manager/owner); lint and production build clean
+- Frontend: 74 passing (adds insight generator traceability, SSE parsing, answer panel states, filter URL sync, palette routing, token contrast). Was 47 passing (adds import wizard flow, polling, failure, resume, error download, viewer access). Was 31 passing (API client headers and error envelope, onboarding validation and percent conversion, empty overview shows no figures, role gating for viewer/manager/owner); lint and production build clean
 - Not yet tested: real sign-in against Supabase Auth end to end (the build environment can't reach Supabase); first run should be done by the owner
 
 ## Integrations

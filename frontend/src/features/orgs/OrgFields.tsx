@@ -88,7 +88,7 @@ export function TaxFields({ control, register, errors, disabled }: Props) {
         control={control}
         name="pricesIncludeTax"
         render={({ field }) => (
-          <div className="flex items-start gap-3 rounded-lg border border-line bg-subtle/50 p-3.5">
+          <div className="flex items-start gap-3 rounded-lg border border-line bg-surface-2/50 p-3.5">
             <Checkbox
               id="pricesIncludeTax"
               checked={field.value}
@@ -99,7 +99,7 @@ export function TaxFields({ control, register, errors, disabled }: Props) {
             />
             <div className="flex flex-col gap-0.5">
               <Label htmlFor="pricesIncludeTax">{t('onboarding.pricesIncludeTax')}</Label>
-              <p id="pricesIncludeTax-hint" className="text-xs text-muted">
+              <p id="pricesIncludeTax-hint" className="text-caption text-muted">
                 {t('onboarding.pricesIncludeTaxHint')}
               </p>
             </div>

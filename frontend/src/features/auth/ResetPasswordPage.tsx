@@ -39,7 +39,7 @@ export function ResetPasswordPage() {
       }
     >
       {!session ? (
-        <p role="alert" className="rounded-md bg-warning-soft px-3 py-2 text-sm text-warning">
+        <p role="alert" className="rounded-md bg-warning-soft px-3 py-2 text-body text-warning">
           {t('auth.resetNoSession')}
         </p>
       ) : (
@@ -55,7 +55,7 @@ export function ResetPasswordPage() {
             />
           </Field>
           {error && (
-            <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-sm text-danger-text">
+            <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-body text-danger-text">
               {error}
             </p>
           )}

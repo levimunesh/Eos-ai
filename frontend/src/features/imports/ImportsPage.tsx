@@ -33,19 +33,19 @@ export function ImportOrder({ entities, done }: { entities: EntityType[]; done: 
         const missing = e.depends_on.filter((d) => !done.has(d))
         const isDone = done.has(e.key)
         return (
-          <li key={e.key} className="flex items-start gap-3 border-b border-line px-5 py-3 last:border-b-0">
-            <span
-              aria-hidden
-              className={cn(
-                'mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-medium tabular-nums',
-                isDone ? 'bg-success-soft text-success' : 'bg-subtle text-muted ring-1 ring-line ring-inset',
-              )}
-            >
-              {isDone ? <Check className="size-3.5" strokeWidth={2.5} /> : i + 1}
+          <li key={e.key} className="flex items-start gap-3 border-b border-line px-4 py-2.5 last:border-b-0">
+            <span aria-hidden className="mono mt-0.5 w-4 shrink-0 text-end text-muted">
+              {i + 1}
             </span>
             <div className="min-w-0 flex-1">
-              <p className="flex flex-wrap items-center gap-2 text-sm font-medium">
+              <p className="flex flex-wrap items-center gap-2 text-body font-medium">
                 {e.label}
+                {isDone && (
+                  <span className="inline-flex items-center gap-1 text-caption font-normal text-success">
+                    <Check aria-hidden className="size-3" strokeWidth={2.5} />
+                    {t('imports.status.done')}
+                  </span>
+                )}
                 {e.owner_only && (
                   <Badge tone="outline">
                     <Lock aria-hidden className="size-3" />
@@ -53,9 +53,9 @@ export function ImportOrder({ entities, done }: { entities: EntityType[]; done: 
                   </Badge>
                 )}
               </p>
-              <p className="text-sm text-muted">{e.description}</p>
+              <p className="text-body text-muted">{e.description}</p>
               {missing.length > 0 && !isDone && (
-                <p className="mt-0.5 text-xs text-warning">
+                <p className="mt-0.5 text-caption text-warning">
                   {t('imports.needsFirst', { deps: missing.map((d) => labels.get(d) ?? d).join(', ') })}
                 </p>
               )}
@@ -94,7 +94,7 @@ function ImportsContent() {
   )
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <PageHeader title={t('imports.title')} description={t('imports.description')} actions={newButton} />
 
       <Card>
@@ -126,12 +126,12 @@ function ImportsContent() {
                     <Link
                       to={`/imports/new?id=${i.id}`}
                       aria-label={t('imports.openImport', { file: i.file_name })}
-                      className="block truncate font-medium hover:underline"
+                      className="mono block truncate text-fg hover:underline"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {i.file_name}
                     </Link>
-                    <span className="block truncate text-xs text-muted md:hidden">
+                    <span className="block truncate text-caption text-muted md:hidden">
                       {labels.get(i.entity_type) ?? i.entity_type}
                       <span className="lg:hidden">, {relativeTime(i.created_at, now)}</span>
                     </span>
@@ -140,7 +140,7 @@ function ImportsContent() {
                   <TableCell>
                     <StatusPill status={i.status} />
                   </TableCell>
-                  <TableCell className="hidden text-end tabular-nums sm:table-cell">
+                  <TableCell className="num hidden text-end sm:table-cell">
                     {i.rows_total == null ? (
                       <span className="text-muted">{'–'}</span>
                     ) : (
@@ -151,7 +151,7 @@ function ImportsContent() {
                             : count(i.rows_total)}
                         </span>
                         {(i.rows_rejected ?? 0) + (i.rows_duplicate ?? 0) > 0 && (
-                          <span className="text-xs text-muted">
+                          <span className="text-caption text-muted">
                             {[
                               i.rows_rejected ? t('imports.rowsRejected', { n: count(i.rows_rejected) }) : null,
                               i.rows_duplicate ? t('imports.rowsDuplicate', { n: count(i.rows_duplicate) }) : null,
@@ -163,7 +163,7 @@ function ImportsContent() {
                       </div>
                     )}
                   </TableCell>
-                  <TableCell className="hidden text-end whitespace-nowrap text-fg-2 lg:table-cell" title={new Date(i.created_at).toLocaleString()}>
+                  <TableCell className="mono hidden text-end whitespace-nowrap text-fg-2 lg:table-cell" title={new Date(i.created_at).toLocaleString()}>
                     {relativeTime(i.created_at, now)}
                   </TableCell>
                 </TableRow>

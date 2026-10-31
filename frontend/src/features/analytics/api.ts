@@ -2,7 +2,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useOrg } from '@/features/orgs/org-context'
 import { useApi } from '@/lib/api-context'
 import { qk } from '@/lib/query-keys'
-import type { BreakdownOrder, BreakdownResponse, Dimension, KpiResponse, SaleDetail, SaleStatus, SalesPage } from './types'
+import type { BreakdownOrder, BreakdownResponse, Dimension, InsightsResponse, KpiResponse, SaleDetail, SaleStatus, SalesPage } from './types'
 
 export interface RangeParams {
   from: string
@@ -29,6 +29,19 @@ export function useKpis(r: RangeParams & { compare: boolean }, enabled = true) {
     queryFn: ({ signal }) => api.get<KpiResponse>(`/kpis?${q}`, { orgId, signal }),
     enabled,
     placeholderData: keepPreviousData,
+  })
+}
+
+export function useInsights(r: RangeParams, enabled = true) {
+  const api = useApi()
+  const { orgId } = useOrg()
+  const q = qs(rangeQs(r))
+  return useQuery({
+    queryKey: qk.insights(orgId, q),
+    queryFn: ({ signal }) => api.get<InsightsResponse>(`/insights?${q}`, { orgId, signal }),
+    enabled,
+    placeholderData: keepPreviousData,
+    retry: false,
   })
 }
 

@@ -17,7 +17,7 @@ export const PopoverContent = forwardRef<
       align={align}
       collisionPadding={collisionPadding}
       className={cn(
-        'anim-menu z-50 w-72 max-w-[calc(100vw-24px)] rounded-lg border border-line bg-elevated p-3 text-fg shadow-lg focus:outline-none',
+        'anim-menu elev-raised z-50 w-72 max-w-[calc(100vw-24px)] rounded-lg p-3 text-body text-fg focus:outline-none',
         className,
       )}
       {...props}

@@ -50,7 +50,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <div
             key={toast.id}
             role={toast.tone === 'error' ? 'alert' : 'status'}
-            className="anim-toast pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-lg border border-line bg-elevated px-4 py-3 text-sm text-fg shadow-lg"
+            className="anim-toast pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-lg border border-line bg-elevated px-4 py-3 text-body text-fg shadow-lg"
           >
             {toast.tone === 'success' ? (
               <CircleCheck aria-hidden className="mt-0.5 size-4 shrink-0 text-success" />

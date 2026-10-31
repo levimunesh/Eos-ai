@@ -47,7 +47,7 @@ export function BranchesPage() {
   ) : undefined
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <PageHeader
         title={t('branches.title')}
         description={isOwner ? t('branches.description') : t('branches.descriptionScoped')}
@@ -95,13 +95,11 @@ export function BranchesPage() {
                 return (
                   <TableRow key={b.id} className={b.is_active ? undefined : 'text-muted'}>
                     <TableCell className="hidden whitespace-nowrap sm:table-cell">
-                      <span className="rounded-md bg-subtle px-1.5 py-0.5 text-[0.8125rem] font-medium tabular-nums ring-1 ring-line ring-inset">
-                        {b.code}
-                      </span>
+                      <span className="mono text-fg">{b.code}</span>
                     </TableCell>
                     <TableCell>
                       <span className={b.is_active ? 'font-medium sm:font-normal' : 'text-muted'}>{b.name}</span>
-                      <span className="block text-xs text-muted tabular-nums sm:hidden">
+                      <span className="mono block text-muted sm:hidden">
                         {b.code}
                         {b.city && `, ${b.city}`}
                       </span>

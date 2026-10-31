@@ -26,9 +26,9 @@ export function UserMenu() {
     <DropdownMenu>
       <DropdownTrigger
         aria-label={t('shell.userMenu')}
-        className="flex size-11 items-center justify-center rounded-full sm:size-9"
+        className="ms-0.5 flex size-9 items-center justify-center rounded-full sm:size-7"
       >
-        <Avatar name={name} seed={me.id} className="ring-2 ring-surface" />
+        <Avatar name={name} seed={me.id} className="size-6 text-[0.625rem]" />
       </DropdownTrigger>
       <DropdownContent align="end" className="w-64">
         <div className="flex items-center gap-3 px-2 py-2">

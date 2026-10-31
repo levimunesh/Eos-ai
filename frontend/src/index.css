@@ -1,111 +1,129 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/geist/wght.css';
+@import '@fontsource-variable/geist-mono/wght.css';
 
 /*
-  EOS AI design tokens.
-  Neutral, quiet surfaces; one "dawn" gradient (Eos is the goddess of dawn) reserved for the
-  brand mark, primary actions, active navigation and progress. Both themes are tuned
-  separately rather than inverted. Text pairs meet WCAG AA in both.
+  EOS AI design tokens: "Ledger at first light".
+  A neutral, hairline, dense instrument. Colour appears exactly twice: a cool ink-blue for
+  interaction, and a warm "dawn" glow reserved for the AI and for the one insight the system
+  wants you to notice. Light and dark are tuned separately; dark is layered (canvas -> surface ->
+  surface-2 -> overlay) with a 1px inner stroke on raised surfaces, not an inverted light theme.
+  Text pairs meet WCAG AA on canvas and surface in both themes (see tokens.test.tsx).
 */
 
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 :root {
   color-scheme: light;
-  --canvas: #f7f8fa;
+  --canvas: #f6f6f4;
   --surface: #ffffff;
-  --subtle: #f0f2f5;
+  --surface-2: #f1f1ee;
+  --subtle: var(--surface-2);
   --elevated: #ffffff;
-  --line: #e3e6eb;
-  --line-strong: #cdd2da;
-  --fg: #14171c;
-  --fg-2: #3c424d;
-  --muted: #5f6675;
-  --accent: #3a4fe0;
-  --accent-hover: #3244cc;
-  --accent-text: #3244cc;
-  --accent-soft: #eef0ff;
+  --line: #e6e6e2;
+  --line-strong: #d2d2cc;
+  --fg: #111210;
+  --fg-2: #4a4c47;
+  --muted: #6a6d66;
+  --accent: #2e4bd8;
+  --accent-hover: #2740be;
+  --accent-text: #2740be;
+  --accent-soft: #eaedfb;
   --accent-fg: #ffffff;
-  --success: #11795a;
-  --success-soft: #e8f5ef;
-  --warning: #9a5800;
-  --warning-soft: #fdf3e3;
-  --danger: #c93b32;
-  --danger-text: #c93b32;
-  --danger-soft: #fdeeed;
-  --overlay: rgb(15 17 21 / 0.42);
-  --ring: rgb(58 79 224 / 0.55);
-  --ring-halo: rgb(58 79 224 / 0.16);
-  --skeleton: #e9ecf1;
-  /* Charts: validated categorical pair (dataviz validator, light surface #fff). */
-  --chart-1: #3a4fe0;
-  --chart-2: #14946b;
-  --chart-compare: #8a919e;
-  --chart-grid: #eceef2;
-  --chart-axis: #cdd2da;
+  --success: #187553;
+  --success-soft: #e5f3ec;
+  --warning: #9a5b00;
+  --warning-soft: #fbf1df;
+  --danger: #c4392f;
+  --danger-text: #c4392f;
+  --danger-soft: #fbebe9;
+  --overlay: rgb(17 18 16 / 0.32);
+  --ring: rgb(46 75 216 / 0.55);
+  --ring-halo: rgb(46 75 216 / 0.16);
+  --skeleton: #e9e9e5;
+  --raised-inset: transparent;
 
-  --dawn: linear-gradient(135deg, #3a4fe0 0%, #6e48dc 55%, #e0577a 100%);
-  --dawn-button: linear-gradient(180deg, #4457e6 0%, #3a4fe0 55%, #3546d6 100%);
-  --dawn-button-hover: linear-gradient(180deg, #3d50dc 0%, #3244cc 100%);
+  /* Data series: identity only. Good/bad colour belongs to deltas, never to a series. */
+  --chart-1: #2e4bd8;
+  --chart-2: #0e8f86;
+  --chart-compare: #b8bbc4;
+  --chart-highlight: #e0577a;
+  --chart-grid: #e6e6e2;
+  --chart-axis: #d2d2cc;
+  --chart-bar-bg: #ebedf6;
 
-  --shadow-xs: 0 1px 2px rgb(16 24 40 / 0.05);
-  --shadow-sm: 0 1px 2px rgb(16 24 40 / 0.04), 0 2px 6px -1px rgb(16 24 40 / 0.06);
-  --shadow-md: 0 1px 2px rgb(16 24 40 / 0.04), 0 8px 20px -6px rgb(16 24 40 / 0.12);
-  --shadow-lg: 0 2px 6px rgb(16 24 40 / 0.06), 0 28px 56px -16px rgb(16 24 40 / 0.28);
-  --inset-highlight: inset 0 1px 0 rgb(255 255 255 / 0.18);
+  /* Dawn: AI and insight surfaces only. Hairline, icon fill, 2px rule; never a button fill. */
+  --dawn: linear-gradient(135deg, #f5a05a 0%, #e0577a 55%, #7a5af0 100%);
+  --dawn-soft: linear-gradient(135deg, rgb(245 160 90 / 0.12), rgb(224 87 122 / 0.08) 55%, rgb(122 90 240 / 0.1));
+  --dawn-ink: #b8432f;
+
+  --shadow-raised: 0 1px 2px rgb(0 0 0 / 0.04), 0 0 0 1px var(--line);
+  --shadow-floating: 0 16px 40px -12px rgb(0 0 0 / 0.25), 0 0 0 1px var(--line);
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.04);
+  --shadow-sm: var(--shadow-raised);
+  --shadow-md: var(--shadow-raised);
+  --shadow-lg: var(--shadow-floating);
 }
 
 [data-theme='dark'] {
   color-scheme: dark;
-  --canvas: #0e1014;
-  --surface: #14171c;
-  --subtle: #1a1e25;
-  --elevated: #1b1f27;
-  --line: #252a33;
-  --line-strong: #343a45;
-  --fg: #eceef2;
-  --fg-2: #bcc2cc;
-  --muted: #8c94a4;
-  --accent: #4f5fe8;
-  --accent-hover: #4655dd;
-  --accent-text: #aeb6ff;
-  --accent-soft: #1e2340;
+  --canvas: #0c0d10;
+  --surface: #141519;
+  --surface-2: #1b1d22;
+  --subtle: var(--surface-2);
+  --elevated: #22242a;
+  --line: rgb(255 255 255 / 0.08);
+  --line-strong: rgb(255 255 255 / 0.14);
+  --fg: #ecece8;
+  --fg-2: #b5b7b0;
+  --muted: #8b8e87;
+  --accent: #3d56e6;
+  --accent-hover: #4a62ef;
+  --accent-text: #8f9cff;
+  --accent-soft: #1d2242;
   --accent-fg: #ffffff;
-  --success: #4fd69c;
-  --success-soft: #10291f;
-  --warning: #f2b65a;
-  --warning-soft: #2c2212;
-  --danger: #c93b32;
-  --danger-text: #ff8a82;
-  --danger-soft: #36191a;
-  --overlay: rgb(0 0 0 / 0.6);
-  --ring: rgb(140 154 255 / 0.7);
-  --ring-halo: rgb(140 154 255 / 0.18);
-  --skeleton: #222731;
-  --chart-1: #6b78f0;
-  --chart-2: #199e70;
-  --chart-compare: #6f7787;
-  --chart-grid: #20242c;
-  --chart-axis: #343a45;
+  --success: #4fd39c;
+  --success-soft: #0f2a1e;
+  --warning: #f0b45a;
+  --warning-soft: #2b2111;
+  --danger: #c4392f;
+  --danger-text: #ff7b72;
+  --danger-soft: #361b1a;
+  --overlay: rgb(0 0 0 / 0.55);
+  --ring: rgb(143 156 255 / 0.7);
+  --ring-halo: rgb(143 156 255 / 0.18);
+  --skeleton: #22242a;
+  --raised-inset: rgb(255 255 255 / 0.06);
 
-  --dawn: linear-gradient(135deg, #5466f0 0%, #7c57e6 55%, #e8698a 100%);
-  --dawn-button: linear-gradient(180deg, #5767ee 0%, #4f5fe8 55%, #4655dd 100%);
-  --dawn-button-hover: linear-gradient(180deg, #4d5de6 0%, #4250d4 100%);
+  --chart-1: #8a96ff;
+  --chart-2: #3fc2b5;
+  --chart-compare: #4b4e57;
+  --chart-highlight: #f27a97;
+  --chart-grid: rgb(255 255 255 / 0.07);
+  --chart-axis: rgb(255 255 255 / 0.14);
+  --chart-bar-bg: #1e2130;
 
+  --dawn: linear-gradient(135deg, #f7a862 0%, #ec6a8b 55%, #8e74ff 100%);
+  --dawn-soft: linear-gradient(135deg, rgb(247 168 98 / 0.12), rgb(236 106 139 / 0.08) 55%, rgb(142 116 255 / 0.12));
+  --dawn-ink: #f4a071;
+
+  --shadow-raised: 0 1px 2px rgb(0 0 0 / 0.5), 0 0 0 1px rgb(255 255 255 / 0.08);
+  --shadow-floating: 0 24px 48px -12px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(255 255 255 / 0.1);
   --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.4);
-  --shadow-sm: 0 0 0 1px rgb(255 255 255 / 0.02), 0 2px 6px rgb(0 0 0 / 0.35);
-  --shadow-md: 0 0 0 1px rgb(255 255 255 / 0.03), 0 10px 24px -8px rgb(0 0 0 / 0.6);
-  --shadow-lg: 0 0 0 1px rgb(255 255 255 / 0.04), 0 30px 60px -16px rgb(0 0 0 / 0.75);
-  --inset-highlight: inset 0 1px 0 rgb(255 255 255 / 0.14);
+  --shadow-sm: var(--shadow-raised);
+  --shadow-md: var(--shadow-raised);
+  --shadow-lg: var(--shadow-floating);
 }
 
 @theme inline {
   /* An Arabic companion (e.g. IBM Plex Sans Arabic) slots in via --font-arabic for RTL. */
   --font-sans: 'Geist Variable', var(--font-arabic, ui-sans-serif), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
   --color-canvas: var(--canvas);
   --color-surface: var(--surface);
-  --color-subtle: var(--subtle);
+  --color-surface-2: var(--surface-2);
+  --color-subtle: var(--surface-2);
   --color-elevated: var(--elevated);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
@@ -129,17 +147,46 @@
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-compare: var(--chart-compare);
+  --color-chart-highlight: var(--chart-highlight);
+  --color-chart-bar-bg: var(--chart-bar-bg);
+  --color-dawn-ink: var(--dawn-ink);
 
   --shadow-xs: var(--shadow-xs);
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);
+  --shadow-raised: var(--shadow-raised);
+  --shadow-floating: var(--shadow-floating);
 
-  --radius-sm: 5px;
-  --radius-md: 7px;
-  --radius-lg: 10px;
-  --radius-xl: 14px;
+  /* Three radii only: controls, cards, dialogs. */
+  --radius-sm: 6px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 12px;
 
+  /* Type scale (review section 3). Numbers are the hero; the page title is not. */
+  --text-display: 2.5rem;
+  --text-display--line-height: 2.75rem;
+  --text-display--letter-spacing: -0.02em;
+  --text-display--font-weight: 500;
+  --text-kpi: 1.375rem;
+  --text-kpi--line-height: 1.75rem;
+  --text-kpi--letter-spacing: -0.015em;
+  --text-kpi--font-weight: 500;
+  --text-h1: 1.25rem;
+  --text-h1--line-height: 1.75rem;
+  --text-h1--letter-spacing: -0.01em;
+  --text-h1--font-weight: 600;
+  --text-title: 0.875rem;
+  --text-title--line-height: 1.25rem;
+  --text-title--font-weight: 600;
+  --text-body: 0.8125rem;
+  --text-body--line-height: 1.25rem;
+  --text-caption: 0.71875rem;
+  --text-caption--line-height: 1rem;
+  --text-mono: 0.78125rem;
+  --text-mono--line-height: 1.25rem;
   --text-2xs: 0.6875rem;
   --text-2xs--line-height: 1rem;
 }
@@ -153,15 +200,15 @@
     background: var(--canvas);
     color: var(--fg);
     font-family: var(--font-sans);
-    font-size: 0.875rem;
-    line-height: 1.5;
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
     font-feature-settings: 'ss01', 'cv11';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
   h1, h2, h3 {
-    letter-spacing: -0.015em;
+    letter-spacing: -0.01em;
     text-wrap: balance;
   }
   :focus-visible {
@@ -184,27 +231,79 @@
 }
 
 .bg-dawn { background-image: var(--dawn); }
-.btn-dawn {
-  background-image: var(--dawn-button);
-  box-shadow: var(--inset-highlight), 0 1px 2px rgb(16 24 40 / 0.18), 0 0 0 1px rgb(39 52 180 / 0.35);
+.bg-dawn-soft { background-image: var(--dawn-soft); }
+.text-dawn {
+  background-image: var(--dawn);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
-.btn-dawn:hover { background-image: var(--dawn-button-hover); }
+/* Dawn hairline: a 1px gradient border around a surface, drawn with two backgrounds. */
+.dawn-hairline {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    var(--dawn) border-box;
+}
+/* Dawn rule: a 2px gradient rule on the start edge. */
+.dawn-rule { position: relative; }
+.dawn-rule::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 2px;
+  border-radius: 2px;
+  background-image: var(--dawn);
+}
 
-/* Hairline hover card lift, used only on interactive rows/cards. */
+/* Identifiers: receipt numbers, SKUs, branch codes, dates in tables, axis ticks. */
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  line-height: var(--text-mono--line-height);
+  font-weight: 450;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+.num { font-variant-numeric: tabular-nums; }
+
+/* Elevation: flat (in-page cards), raised (popovers), floating (dialogs, sheets, palette). */
+.card-flat {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: inset 0 0 0 1px var(--raised-inset);
+}
 .surface-raised {
   background: var(--surface);
   border: 1px solid var(--line);
-  box-shadow: var(--shadow-sm);
+  box-shadow: inset 0 0 0 1px var(--raised-inset);
 }
+.elev-raised {
+  background: var(--elevated);
+  box-shadow: var(--shadow-raised), inset 0 0 0 1px var(--raised-inset);
+}
+.elev-floating {
+  background: var(--elevated);
+  box-shadow: var(--shadow-floating), inset 0 0 0 1px var(--raised-inset);
+}
+
+/* Primary button: solid accent, a hairline darker ring, highlight on top. */
+.btn-primary {
+  background: var(--accent);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14), 0 0 0 1px rgb(0 0 0 / 0.08);
+}
+.btn-primary:hover { background: var(--accent-hover); }
 
 /* Deterministic avatar tint from --h (hue); separate tuning per theme keeps AA text. */
 .avatar {
-  background: hsl(var(--h) 75% 94%);
-  color: hsl(var(--h) 55% 28%);
+  background: hsl(var(--h) 55% 93%);
+  color: hsl(var(--h) 45% 30%);
 }
 [data-theme='dark'] .avatar {
-  background: hsl(var(--h) 32% 22%);
-  color: hsl(var(--h) 80% 82%);
+  background: hsl(var(--h) 28% 22%);
+  color: hsl(var(--h) 70% 82%);
 }
 
 /* Collapsed-sidebar tooltips, positioned with logical properties for RTL. */
@@ -217,16 +316,24 @@
   top: 50%;
   translate: 0 -50%;
   white-space: nowrap;
-  padding: 4px 8px;
+  padding: 3px 8px;
   border-radius: var(--radius-sm);
   background: var(--fg);
   color: var(--canvas);
   font-size: 0.75rem;
   font-weight: 500;
-  box-shadow: var(--shadow-md);
   z-index: 60;
   pointer-events: none;
 }
+
+/* Bar-behind-number table cells: a proportional fill under right-aligned figures. */
+.bar-cell {
+  background-image: linear-gradient(to right, var(--bar-color, var(--chart-bar-bg)), var(--bar-color, var(--chart-bar-bg)));
+  background-repeat: no-repeat;
+  background-size: var(--bar, 0%) 100%;
+  background-position: 100% 0;
+}
+[dir='rtl'] .bar-cell { background-position: 0 0; }
 
 /* ---------- Motion: short, purposeful, and off under reduced motion ---------- */
 @keyframes eos-fade { from { opacity: 0; } to { opacity: 1; } }
@@ -237,6 +344,7 @@
 @keyframes eos-toast { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
 @keyframes eos-page { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
 @keyframes eos-menu { from { opacity: 0; transform: translateY(-4px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes eos-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
 
 .anim-overlay[data-state='open'] { animation: eos-fade 160ms ease-out; }
 .anim-dialog[data-state='open'] { animation: eos-sheet 240ms cubic-bezier(0.32, 0.72, 0, 1); }
@@ -248,6 +356,7 @@
 .anim-toast { animation: eos-toast 200ms cubic-bezier(0.2, 0.8, 0.2, 1); }
 .anim-page { animation: eos-page 180ms ease-out; }
 .anim-menu[data-state='open'] { animation: eos-menu 140ms ease-out; }
+.anim-caret { animation: eos-blink 1s steps(2, start) infinite; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -264,7 +373,7 @@
 }
 [dir='rtl'] .motion-safe\:animate-\[eos-indeterminate_1\.4s_ease-in-out_infinite\] { animation-direction: reverse; }
 
-/* Receipt side sheet: slides up as a bottom sheet on phones, in from the end edge on larger screens. */
+/* Side sheet: slides up as a bottom sheet on phones, in from the end edge on larger screens. */
 @keyframes eos-sheet-end { from { transform: translateX(100%); } to { transform: none; } }
 @keyframes eos-sheet-end-rtl { from { transform: translateX(-100%); } to { transform: none; } }
 .anim-sheet[data-state='open'] { animation: eos-sheet 240ms cubic-bezier(0.32, 0.72, 0, 1); }

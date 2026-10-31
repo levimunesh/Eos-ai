@@ -24,14 +24,18 @@ import type { Invitation, Member, Role } from '@/lib/types'
 import { accessSummary } from './access'
 import { ConfirmDialog, EditAccessDialog, InviteDialog } from './MemberDialogs'
 
-const ROLE_TONE: Record<Role, 'accent' | 'neutral' | 'outline'> = {
-  owner: 'accent',
+const ROLE_TONE: Record<Role, 'neutral' | 'outline'> = {
+  owner: 'neutral',
   manager: 'neutral',
   viewer: 'outline',
 }
 
 export function RoleBadge({ role }: { role: Role }) {
-  return <Badge tone={ROLE_TONE[role]}>{t(`roles.${role}`)}</Badge>
+  return (
+    <Badge tone={ROLE_TONE[role]} filled>
+      {t(`roles.${role}`)}
+    </Badge>
+  )
 }
 
 function isPending(inv: Invitation, now: number) {
@@ -43,7 +47,7 @@ export function MembersPage() {
   // The member list includes everyone's email; the API only serves it to owners and managers.
   if (role === 'viewer') {
     return (
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4">
         <PageHeader title={t('members.title')} description={t('members.viewerNoAccess')} />
       </div>
     )
@@ -88,7 +92,7 @@ function MembersContent() {
   const tz = org.data?.timezone
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <PageHeader
         title={t('members.title')}
         description={t('members.description')}
@@ -129,14 +133,14 @@ function MembersContent() {
                   <TableRow key={m.membership_id}>
                     <TableCell className="max-w-[18rem]">
                       <div className="flex items-center gap-3">
-                        <Avatar name={m.full_name || m.email} seed={m.user_id} />
+                        <Avatar name={m.full_name || m.email} seed={m.user_id} className="size-6 text-[0.625rem]" />
                         <div className="min-w-0">
                           <div className="flex items-center gap-2">
                             <span className="truncate font-medium">{m.full_name || m.email}</span>
                             {isMe && <Badge tone="outline">{t('common.you')}</Badge>}
                           </div>
-                          {m.full_name && <span className="block truncate text-xs text-muted">{m.email}</span>}
-                          <span className="flex items-center gap-2 pt-1 text-xs text-muted md:hidden" title={access.title}>
+                          {m.full_name && <span className="block truncate text-caption text-muted">{m.email}</span>}
+                          <span className="flex items-center gap-2 pt-1 text-caption text-muted md:hidden" title={access.title}>
                             <span className="sm:hidden">
                               <RoleBadge role={m.role} />
                             </span>
@@ -239,7 +243,7 @@ function MembersContent() {
                     <TableRow key={inv.id}>
                       <TableCell className="max-w-[18rem]">
                         <div className="flex items-center gap-3">
-                          <Avatar name={inv.email} seed={inv.id} className="opacity-70" />
+                          <Avatar name={inv.email} seed={inv.id} className="size-6 text-[0.625rem] opacity-70" />
                           <div className="min-w-0">
                             <span className="block truncate">{inv.email}</span>
                             <span className="block pt-1 sm:hidden">
@@ -254,7 +258,7 @@ function MembersContent() {
                       <TableCell className="hidden text-fg-2 md:table-cell" title={access.title}>
                         {access.label}
                       </TableCell>
-                      <TableCell className="hidden text-fg-2 tabular-nums sm:table-cell">
+                      <TableCell className="mono hidden text-fg-2 sm:table-cell">
                         {formatDate(inv.expires_at, dateFmt, tz)}
                       </TableCell>
                       <TableCell className="text-end">

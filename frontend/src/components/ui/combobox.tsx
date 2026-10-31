@@ -157,12 +157,12 @@ export function Combobox({
                 setActive(0)
               }}
               onKeyDown={onKey}
-              className="h-11 w-full bg-transparent text-sm outline-none placeholder:text-muted sm:h-10"
+              className="h-11 w-full bg-transparent text-body outline-none placeholder:text-muted sm:h-10"
               placeholder={t('common.search')}
             />
           </div>
           <ul ref={listRef} id={listId} role="listbox" className="max-h-64 overflow-y-auto py-1">
-            {filtered.length === 0 && <li className="px-3 py-2 text-sm text-muted">{t('common.noMatches')}</li>}
+            {filtered.length === 0 && <li className="px-3 py-2 text-body text-muted">{t('common.noMatches')}</li>}
             {filtered.map((opt, i) => (
               <li
                 key={opt.value}
@@ -174,8 +174,8 @@ export function Combobox({
                 onClick={() => choose(opt)}
                 onMouseMove={() => setActive(i)}
                 className={cn(
-                  'mx-1 flex min-h-11 cursor-pointer items-center gap-2 rounded-md px-2 text-sm sm:min-h-8',
-                  i === active && 'bg-subtle',
+                  'mx-1 flex min-h-10 cursor-pointer items-center gap-2 rounded-md px-2 text-body sm:min-h-8',
+                  i === active && 'bg-surface-2',
                 )}
               >
                 <Check

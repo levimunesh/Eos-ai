@@ -111,11 +111,11 @@ function CopyField({ value }: { value: string }) {
   const [copied, setCopied] = useState(false)
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor="invite-link" className="text-sm font-medium">
+      <label htmlFor="invite-link" className="text-body font-medium">
         {t('invitations.linkLabel')}
       </label>
       <div className="flex gap-2">
-        <Input id="invite-link" readOnly value={value} onFocus={(e) => e.currentTarget.select()} className="text-xs" dir="ltr" />
+        <Input id="invite-link" readOnly value={value} onFocus={(e) => e.currentTarget.select()} className="text-caption" dir="ltr" />
         <Button
           variant="secondary"
           onClick={async () => {
@@ -188,7 +188,7 @@ function InviteDialogContent({ branches }: { branches: Branch[] }) {
         </DialogHeader>
         <DialogBody className="flex flex-col gap-4">
           <CopyField value={inviteLink(created.token)} />
-          <p className="flex items-start gap-2 rounded-lg bg-warning-soft px-3 py-2.5 text-sm text-warning">
+          <p className="flex items-start gap-2 rounded-lg bg-warning-soft px-3 py-2.5 text-body text-warning">
             <Info aria-hidden className="mt-0.5 size-4 shrink-0" />
             {t('invitations.emailNotBuilt')}
           </p>

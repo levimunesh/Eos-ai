@@ -205,10 +205,28 @@ export function createApiClient(options: ApiClientOptions) {
     })
   }
 
+  /** POST and return the raw Response so the caller can read a server-sent event stream. */
+  async function stream(path: string, body: unknown, opts: { orgId?: string | null; signal?: AbortSignal } = {}): Promise<Response> {
+    const headers = await authHeaders(opts.orgId)
+    headers['Content-Type'] = 'application/json'
+    headers.Accept = 'text/event-stream'
+    const doFetch = options.fetchImpl ?? ((...args: Parameters<typeof fetch>) => fetch(...args))
+    let res: Response
+    try {
+      res = await doFetch(`${base}${path}`, { method: 'POST', headers, body: JSON.stringify(body), signal: opts.signal })
+    } catch (e) {
+      if (e instanceof DOMException && e.name === 'AbortError') throw e
+      throw new ApiError(0, 'network_error', t('errors.network'))
+    }
+    if (!res.ok) throw errorFrom(res.status, await res.text())
+    return res
+  }
+
   return {
     request,
     blob,
     upload,
+    stream,
     put: <T>(path: string, body?: unknown, opts?: RequestOptions) => request<T>('PUT', path, { ...opts, body }),
     get: <T>(path: string, opts?: RequestOptions) => request<T>('GET', path, opts),
     post: <T>(path: string, body?: unknown, opts?: RequestOptions) =>

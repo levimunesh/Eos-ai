@@ -30,12 +30,12 @@ export function InvitePage() {
         <Wordmark />
       </header>
       <main className="flex flex-1 items-start justify-center px-4 py-12">
-        <div className="w-full max-w-md surface-raised rounded-xl p-6">
+        <div className="w-full max-w-md surface-raised rounded-lg p-6">
           <h1 className="text-xl font-semibold">{t('invite.title')}</h1>
-          <p className="mt-2 text-sm text-fg-2">{t('invite.body', { email })}</p>
+          <p className="mt-2 text-body text-fg-2">{t('invite.body', { email })}</p>
 
           {message && (
-            <div role="alert" className="mt-4 flex items-start gap-2 rounded-md bg-danger-soft px-3 py-2 text-sm text-danger-text">
+            <div role="alert" className="mt-4 flex items-start gap-2 rounded-md bg-danger-soft px-3 py-2 text-body text-danger-text">
               <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
               <div className="flex flex-col gap-1">
                 <span>{message}</span>
