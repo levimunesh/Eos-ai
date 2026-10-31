@@ -126,6 +126,7 @@ async def test_answer_backed_by_tools_is_verified(client, ai_org, use_fake):
         "get_kpis",
         "get_sales_breakdown",
         "get_expense_breakdown",
+        "get_insights",
         "get_data_coverage",
         "list_branches",
     }

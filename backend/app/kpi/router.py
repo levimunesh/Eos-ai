@@ -11,7 +11,7 @@ from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from app.core import currency
 from app.core.errors import NotFound
 from app.core.tenancy import OrgContext, get_org_context
-from app.kpi import service
+from app.kpi import insights, service
 from app.kpi.definitions import quantize
 
 router = APIRouter(tags=["analytics"])
@@ -39,6 +39,17 @@ async def kpis(
     return await service.kpis(
         ctx, start, end, _branch_list(branch_ids), compare == "previous_period"
     )
+
+
+@router.get("/insights")
+async def get_insights(
+    start: date = Query(..., alias="from"),
+    end: date = Query(..., alias="to"),
+    branch_ids: str | None = None,
+    ctx: OrgContext = Depends(get_org_context),
+) -> dict[str, Any]:
+    """What changed, what drove it and what needs attention; computed, never generated."""
+    return await insights.compute(ctx, start, end, _branch_list(branch_ids))
 
 
 @router.get("/analytics/sales")

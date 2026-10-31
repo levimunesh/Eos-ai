@@ -16,7 +16,7 @@ from app.catalog.models import Branch
 from app.core import currency
 from app.core.errors import AppError
 from app.core.tenancy import OrgContext
-from app.kpi import engine, service
+from app.kpi import engine, insights, service
 from app.kpi.definitions import quantize
 from app.orgs.models import Organisation
 
@@ -134,6 +134,11 @@ async def get_expense_breakdown(ctx: OrgContext, a: Period) -> dict[str, Any]:
     }
 
 
+async def get_insights(ctx: OrgContext, a: Period) -> dict[str, Any]:
+    out = await insights.compute(ctx, a.start, a.end, await _branch_ids(ctx, a.branch_codes))
+    return {**out, "branch_codes": a.branch_codes}
+
+
 async def get_data_coverage(ctx: OrgContext, _: NoArgs) -> dict[str, Any]:
     scope = None if ctx.all_branches else list(ctx.branch_ids)
     r = (
@@ -209,6 +214,14 @@ TOOLS = {
             "Operating expenses by category for a date range, in base currency.",
             Period,
             get_expense_breakdown,
+        ),
+        Tool(
+            "get_insights",
+            "Computed insights for a period: the headline change and which branch or category "
+            "drove it, discounts or returns growing faster than sales, unusual days, lagging "
+            "branches, and data-quality gaps. Use this before explaining why something changed.",
+            Period,
+            get_insights,
         ),
         Tool(
             "get_data_coverage",

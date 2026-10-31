@@ -57,6 +57,10 @@ Phase 5 — Reports: **backend complete** (sales report for any day or period, E
 - Sales report for a day or any period: key figures with previous period and change, data notes, by branch, by category, top products, trend; same engine as the dashboard so totals always match (tested)
 - Excel export (five sheets, real number formats) and PDF export (A4, tables, data notes, disclaimer)
 
+## Insights engine
+- `GET /insights` and the assistant tool `get_insights`: headline change with the branch or category that drove it, discounts/returns outpacing sales, unusual days vs the period's median (finds the Eid dip in the demo data), lagging branches, missing costs and missing exchange rates
+- Every figure in each sentence is present in its `figures` map and passes the number verifier (tested)
+
 ## AI evaluation
 - `eval/questions.yaml`: 32 questions with exact answers generated from the demo company's independently computed figures (year, months, branches, comparisons, expense categories, plus guards for no-data periods, prompt injection and currency conversion)
 - `eval/run_eval.py`: runs them against a live API with a real model, requires exact figures and zero unverified numbers, writes a results file; grader has its own unit tests
@@ -104,7 +108,7 @@ Phase 5 — Reports: **backend complete** (sales report for any day or period, E
 Round-trip checked locally: upgrade → downgrade to base → upgrade.
 
 ## Tests
-- Backend: 147 passing (adds reports and eval grader). Was 142 passing in under 2 minutes (adds assistant loop, verifier, privacy and usage tests; per-test timeout 240 s). Was 129 passing (adds KPI acceptance and browser-access tests). Was 112 passing, including full demo-company import whose loaded sales match the independently computed answers (418,364.517 OMR net, 48,475 transactions), messy-file accounting (51 rows = 1 imported + 8 rejected + 42 duplicate), replace mode, re-upload detection, branch-scoped imports and Excel/Arabic parsing. Previously: 66 passing (tenancy isolation via API and raw SQL as `eos_app`, RLS guardrail for every tenant table, auth edge cases, roles, invitations, names, demo generator determinism and independent recomputation)
+- Backend: 150 passing (adds insights). Was 147 passing (adds reports and eval grader). Was 142 passing in under 2 minutes (adds assistant loop, verifier, privacy and usage tests; per-test timeout 240 s). Was 129 passing (adds KPI acceptance and browser-access tests). Was 112 passing, including full demo-company import whose loaded sales match the independently computed answers (418,364.517 OMR net, 48,475 transactions), messy-file accounting (51 rows = 1 imported + 8 rejected + 42 duplicate), replace mode, re-upload detection, branch-scoped imports and Excel/Arabic parsing. Previously: 66 passing (tenancy isolation via API and raw SQL as `eos_app`, RLS guardrail for every tenant table, auth edge cases, roles, invitations, names, demo generator determinism and independent recomputation)
 - Isolation tests verified to fail when RLS is removed from a table
 - Frontend: 47 passing (adds import wizard flow, polling, failure, resume, error download, viewer access). Was 31 passing (API client headers and error envelope, onboarding validation and percent conversion, empty overview shows no figures, role gating for viewer/manager/owner); lint and production build clean
 - Not yet tested: real sign-in against Supabase Auth end to end (the build environment can't reach Supabase); first run should be done by the owner

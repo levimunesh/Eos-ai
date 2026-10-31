@@ -370,3 +370,69 @@ async def test_report_respects_branch_scope(client, hand_org, actor):
     rep = r.json()
     assert [row["key"] for row in rep["by_branch"]] == ["B"]
     assert {x["key"]: x for x in rep["kpis"]}["net_sales"]["value"] == "6.845"
+
+
+# ---------------------------------------------------------------------------------------
+# Insights: computed from the same aggregates; every figure is checkable.
+# ---------------------------------------------------------------------------------------
+
+
+async def test_insights_on_hand_data(client, hand_org):
+    owner, org = hand_org
+    h = owner.h(org["id"])
+    # 7-8 Jan vs 5-6 Jan: 2.845 vs 5.400 = -47.3%; branch B moved +0.845, A moved -3.400.
+    r = await client.get(
+        "/api/v1/insights", params={"from": "2025-01-07", "to": "2025-01-08"}, headers=h
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    kinds = {i["kind"]: i for i in body["insights"]}
+    head = kinds["headline_change"]
+    assert head["figures"]["change_pct"] == "-0.4731"
+    assert (
+        head["figures"]["net_sales"] == "2.845" and head["figures"]["previous_net_sales"] == "5.400"
+    )
+    assert head["figures"]["driver"] == "A"  # A fell by 3.400 of a 2.555 total drop
+    assert "A drove" in head["text"]
+    assert "missing_costs" not in kinds  # every item sold on 7-8 Jan has a cost
+    assert "EUR" in kinds["missing_fx"]["text"]  # R6 has no exchange rate
+    assert kinds["branch_lagging"]["figures"]["branch"] == "A"
+    # Every figure quoted in the text exists in `figures` (no invented numbers).
+    from app.assistant.verify import verify
+
+    for ins in body["insights"]:
+        ok, bad = verify(ins["text"], [ins["figures"]])
+        assert ok, (ins["kind"], bad)
+
+
+async def test_insights_no_data_period(client, hand_org):
+    owner, org = hand_org
+    r = await client.get(
+        "/api/v1/insights",
+        params={"from": "2024-01-01", "to": "2024-01-31"},
+        headers=owner.h(org["id"]),
+    )
+    assert [i["kind"] for i in r.json()["insights"]] == ["no_data"]
+
+
+async def test_insights_demo_march_ramadan(client, demo):
+    owner, org, branches, answers = demo
+    r = await client.get(
+        "/api/v1/insights",
+        params={"from": "2025-03-01", "to": "2025-03-31"},
+        headers=owner.h(org["id"]),
+    )
+    body = r.json()
+    kinds = [i["kind"] for i in body["insights"]]
+    head = next(i for i in body["insights"] if i["kind"] == "headline_change")
+    assert head["figures"]["net_sales"] == answers["by_month"]["2025-03"]["net_sales"]
+    assert Decimal(head["figures"]["change_pct"]) > 0
+    assert "missing_costs" in kinds  # demo has 5 products without a cost
+    # Eid (30 Mar - 2 Apr) days run at ~55%: they should surface as unusual days.
+    unusual = [i for i in body["insights"] if i["kind"] == "unusual_day"]
+    assert any(i["figures"]["date"] in ("2025-03-30", "2025-03-31") for i in unusual), unusual
+    for ins in body["insights"]:
+        from app.assistant.verify import verify
+
+        ok, bad = verify(ins["text"], [ins["figures"]])
+        assert ok, (ins["kind"], bad)
